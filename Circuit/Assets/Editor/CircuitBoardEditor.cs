@@ -79,8 +79,13 @@ public class CircuitBoardEditor : Editor
                         obj.RotateClockwise();
                     }
                     GUILayout.EndHorizontal();
+
+                    SerializedObject serializedTile = new SerializedObject(obj);
+                    serializedTile.ApplyModifiedProperties();
                 }
             }
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 }

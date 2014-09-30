@@ -4,6 +4,7 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CircuitTile : MonoBehaviour
 {
+    [SerializeField]
     private static CircuitTilesSO prefabResource = null;
     public static CircuitTilesSO PrefabResource { get { return prefabResource; } set { prefabResource = value; } }
 
@@ -13,10 +14,17 @@ public class CircuitTile : MonoBehaviour
     private CircuitTileType tileType = CircuitTileType.Tile_Empty;
     public CircuitTileType TileType { get { return tileType; } }
 
+    [SerializeField]
     private Directions.Direction tileFacingDirection = Directions.Direction.NORTH;
     public Directions.Direction TileFacingDirection { get { return tileFacingDirection; } }
 
-    private GameObject tileMesh = null;
+    [SerializeField]
+    private GameObject tileMesh;
+
+    void Start()
+    {
+        return;
+    }
 
     public void SpawnTileOfType(CircuitTileType tileType)
     {
