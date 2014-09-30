@@ -4,21 +4,21 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CircuitTile : MonoBehaviour
 {
-    [SerializeField]
+    [SerializeField] [HideInInspector]
     private static CircuitTilesSO prefabResource = null;
     public static CircuitTilesSO PrefabResource { get { return prefabResource; } set { prefabResource = value; } }
 
     public enum CircuitTileType { Tile_Empty, Tile_Start, Tile_End, Tile_Connector, Tile_Straight, Tile_Corner, Tile_TIntersection, Tile_XIntersection }
 
-    [SerializeField]
+    [SerializeField] [HideInInspector]
     private CircuitTileType tileType = CircuitTileType.Tile_Empty;
     public CircuitTileType TileType { get { return tileType; } }
 
-    [SerializeField]
+    [SerializeField] [HideInInspector]
     private Directions.Direction tileFacingDirection = Directions.Direction.NORTH;
     public Directions.Direction TileFacingDirection { get { return tileFacingDirection; } }
 
-    [SerializeField]
+    [SerializeField] [HideInInspector]
     private GameObject tileMesh;
 
     void Start()

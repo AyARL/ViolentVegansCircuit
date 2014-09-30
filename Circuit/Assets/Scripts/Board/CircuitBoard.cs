@@ -4,14 +4,12 @@ using System.Collections.Generic;
 
 public class CircuitBoard : MonoBehaviour
 {
-    [SerializeField]
+    [SerializeField] [HideInInspector]
     private List<CircuitTile> tiles = new List<CircuitTile>();
 
-    [SerializeField]
-    [HideInInspector]
+    [SerializeField] [HideInInspector]
     private int width = 7;
-    [SerializeField]
-    [HideInInspector]
+    [SerializeField] [HideInInspector]
     private int height = 5;
 
     float tileSize = 10f;
