@@ -9,6 +9,7 @@ public static class CustomMenuItems
     {
         GameObject board = new GameObject("CircuitBoard", typeof(CircuitBoard));
         board.GetComponent<CircuitBoard>().Initialise();
+        
     }
 
     [MenuItem("Circuit/Board/Create Tile Prefab Resource")]

@@ -17,22 +17,21 @@ public class CircuitBoard : MonoBehaviour
         CircuitTilesSO prefabResource = Resources.Load<CircuitTilesSO>("TilePrefabMappings");
         if (prefabResource != null)
         {
-            GameObject emptyPrefab = null;
-            prefabResource.CircuitTilePrefabs.TryGetValue(CircuitTilesSO.CircuitTileType.Tile_Empty, out emptyPrefab);
-
-            if (emptyPrefab != null)
+            for (int i = 0; i < width * height; i++)
             {
-                for (int i = 0; i < width * height; i++)
-                {
-                    GameObject tile = Instantiate(emptyPrefab, Vector3.zero, emptyPrefab.transform.rotation) as GameObject;
-                    tile.transform.parent = gameObject.transform;
+                float x = (i % width) * tileSize;
+                float z = (i / width) * tileSize;
 
-                    float x = (i % width) * tileSize;
-                    float z = (i / width) * tileSize;
+                GameObject tile = new GameObject(string.Format("Tile ({0}, {1})", x/10, z/10));
+                tile.transform.parent = gameObject.transform;
+                tile.transform.localPosition = new Vector3(x, 0, z);
 
-                    tile.transform.localPosition = new Vector3(x, 0, z);
-                }
+                CircuitTile tileComp = tile.AddComponent<CircuitTile>();
+                tileComp.SpawnTileOfType(CircuitTile.CircuitTileType.Tile_Empty, prefabResource);
+
+                tiles.Add(tileComp);
             }
+
         }
     }
 }
