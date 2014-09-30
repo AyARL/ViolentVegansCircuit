@@ -53,6 +53,13 @@ public class CircuitTile : MonoBehaviour
             tileMesh = Instantiate(prefab) as GameObject;
             tileMesh.transform.parent = gameObject.transform;
             tileMesh.transform.localPosition = Vector3.zero;
+
+            Vector3 rotator;
+            if (Directions.GetRotationForDirection(tileFacingDirection, out rotator))
+            {
+                tileMesh.transform.rotation = Quaternion.Euler(rotator);
+            }
+
         }
         else
         {
