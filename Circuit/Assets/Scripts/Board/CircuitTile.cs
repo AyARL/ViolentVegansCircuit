@@ -8,7 +8,19 @@ public class CircuitTile : MonoBehaviour
     private static CircuitTilesSO prefabResource = null;
     public static CircuitTilesSO PrefabResource { get { return prefabResource; } set { prefabResource = value; } }
 
-    public enum CircuitTileType { Tile_Empty, Tile_Start, Tile_End, Tile_Connector, Tile_Straight, Tile_Corner, Tile_TIntersection, Tile_XIntersection }
+    public enum CircuitTileType 
+    { 
+        Tile_Empty, 
+        Tile_Start, 
+        Tile_End, 
+        Tile_In_Connector,
+        Tile_Out_Connector,
+        Tile_Straight, 
+        Tile_Corner_Left, 
+        Tile_Corner_Right, 
+        Tile_TIntersection, 
+        Tile_XIntersection 
+    }
 
     [SerializeField] [HideInInspector]
     private CircuitTileType tileType = CircuitTileType.Tile_Empty;

@@ -17,13 +17,19 @@ public class CircuitTilesSO : ScriptableObject
     private GameObject EndTile = null;
 
     [SerializeField]
-    private GameObject ConnectorTile = null;
+    private GameObject OutConnectorTile = null;
+
+    [SerializeField]
+    private GameObject InConnectorTile = null;
 
     [SerializeField]
     private GameObject StraightTile = null;
 
     [SerializeField]
-    private GameObject CornerTile = null;
+    private GameObject LeftCornerTile = null;
+
+    [SerializeField]
+    private GameObject RightCornerTile = null;
 
     [SerializeField]
     private GameObject TIntersectionTile = null;
@@ -44,9 +50,11 @@ public class CircuitTilesSO : ScriptableObject
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Empty, EmptyTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Start, StartTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_End, EndTile);
-        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Connector, ConnectorTile);
+        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_In_Connector, InConnectorTile);
+        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Out_Connector, OutConnectorTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Straight, StraightTile);
-        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Corner, CornerTile);
+        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Corner_Left, LeftCornerTile);
+        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Corner_Right, RightCornerTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_TIntersection, TIntersectionTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_XIntersection, XIntersectionTile);
     }
