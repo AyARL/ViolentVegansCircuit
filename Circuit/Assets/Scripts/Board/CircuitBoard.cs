@@ -28,6 +28,9 @@ public class CircuitBoard : MonoBehaviour
             CircuitTile tileComp = tile.AddComponent<CircuitTile>();
             tileComp.SpawnTileOfType(CircuitTile.CircuitTileType.Tile_Empty);
 
+            CircuitTileFlow flowComp = tile.AddComponent<CircuitTileFlow>();
+            flowComp.Initialise();
+
             tiles.Add(tileComp);
         }
     }
