@@ -3,6 +3,8 @@ using System.Collections;
 
 public class EndPathMarker : PathMarker
 {
+    [SerializeField]
+    private Directions.Direction exitDirection = Directions.Direction.NORTH;
 
     protected override void OnDrawGizmos()
     {
