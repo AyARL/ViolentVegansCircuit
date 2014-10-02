@@ -14,4 +14,11 @@ namespace Circuit
         // Various Default values
         public const float DEFAULT_SPEED = 50.0f;
     }
+
+    public class CErrorStrings
+    {
+        // Declare error messages.
+        public const string ERROR_UNHANDLED_DEVICE = "is an unsupported device type";
+        public const string ERROR_UNRECOGNIZED_VALUE = "Provided enum value is unrecognized";
+    }
 }
