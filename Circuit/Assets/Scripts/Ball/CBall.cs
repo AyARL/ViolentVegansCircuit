@@ -4,10 +4,11 @@ using Circuit;
 
 public enum EBallState
 {
-    STATE_NORMAL,
-    STATE_DIZZY,
-    STATE_HAPPY,
-    STATE_UNHAPPY,
+    STATE_NORMAL    = 0,
+    STATE_DIZZY     = 1,
+    STATE_HAPPY     = 2,
+    STATE_UNHAPPY   = 3,
+    STATE_HIT       = 4,
 }
 
 public enum EMovementType
@@ -88,7 +89,7 @@ public class CBall : MonoBehaviour {
             default:
 
                 // Unhandled device type.
-                Debug.Log( string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE , strFunctionName, SystemInfo.deviceType ) );
+                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE , strFunctionName, SystemInfo.deviceType ) );
 
                 break;
         }
@@ -128,7 +129,7 @@ public class CBall : MonoBehaviour {
             default:
 
                 // Unknown variable, report issue.
-                Debug.Log( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE , strFunctionName, m_eMovementType ) );
+                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE , strFunctionName, m_eMovementType ) );
 
                 break;
         }
@@ -156,7 +157,7 @@ public class CBall : MonoBehaviour {
             default:
                 
                 // Unknown variable, report issue.
-                Debug.Log( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE , strFunctionName, m_eCurrentState ) );
+                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE , strFunctionName, m_eCurrentState ) );
 
                 break;
         }
