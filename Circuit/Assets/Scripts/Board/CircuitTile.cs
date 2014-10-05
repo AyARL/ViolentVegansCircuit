@@ -27,7 +27,7 @@ public class CircuitTile : MonoBehaviour
     private CircuitTileType tileType = CircuitTileType.Tile_Empty;
     public CircuitTileType TileType { get { return tileType; } }
 
-    [SerializeField] [HideInInspector]
+    [SerializeField]
     private Directions.Direction tileFacingDirection = Directions.Direction.NORTH;
     public Directions.Direction TileFacingDirection { get { return tileFacingDirection; } }
 
@@ -100,24 +100,5 @@ public class CircuitTile : MonoBehaviour
             tileMesh.transform.rotation = Quaternion.Euler(rotator);
             tileFacingDirection = newDirection;
         }
-    }
-
-    public void RevertToPrefab()
-    {
-        Directions.Direction setDir = tileFacingDirection;
-        if(PrefabUtility.ResetToPrefabState(tileMesh))
-        {
-            Vector3 rotator;
-            if (Directions.GetRotationForDirection(setDir, out rotator))
-            {
-                tileMesh.transform.rotation = Quaternion.Euler(rotator);
-                tileFacingDirection = setDir;
-            }
-        }
-        else
-        {
-            Debug.LogError(string.Format("Tile {0} could not be reverted to prefab", gameObject.name));
-        }
-
     }
 }
