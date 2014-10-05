@@ -6,6 +6,7 @@ public class CircuitBoard : MonoBehaviour
 {
     [SerializeField] [HideInInspector]
     private List<CircuitTile> tiles = new List<CircuitTile>();
+    public List<CircuitTile> Tiles { get { return tiles; } }
 
     [SerializeField] [HideInInspector]
     private int width = 7;

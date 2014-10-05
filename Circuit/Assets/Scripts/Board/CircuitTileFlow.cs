@@ -6,7 +6,8 @@ using System.Linq;
 public class CircuitTileFlow : MonoBehaviour
 {
     [SerializeField]
-    PathMarker entryMarker = null;
+    private PathMarker entryMarker = null;
+    public PathMarker GetEntryMarker { get { return entryMarker; } }
 
     public enum EntryType { Entry_Invalid, Entry_Flow, Entry_Connector }
     public EntryType TypeOfEntry { get; private set; }
@@ -15,6 +16,11 @@ public class CircuitTileFlow : MonoBehaviour
     public ExitType TypeOfExit { get; private set; }
 
     private void Reset()
+    {
+        Initialise();
+    }
+
+    private void Awake()
     {
         Initialise();
     }
@@ -57,9 +63,17 @@ public class CircuitTileFlow : MonoBehaviour
                 }
                 else
                 {
-                    TypeOfExit = ExitType.Exit_Invalid;
-                    Debug.LogError(string.Format("Tile {0} has no EndPathMarker or OutConnectorMarker", gameObject.name));
-                    return;
+                    end = gameObject.GetComponentInChildren<TerminatorPathMarker>();
+                    if (end != null)
+                    {
+                        TypeOfExit = ExitType.Exit_Terminator;
+                    }
+                    else
+                    {
+                        TypeOfExit = ExitType.Exit_Invalid;
+                        Debug.LogError(string.Format("Tile {0} has no EndPathMarker or OutConnectorMarker", gameObject.name));
+                        return;
+                    }
                 }
             }
         }
