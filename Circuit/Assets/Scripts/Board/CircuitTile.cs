@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
 [ExecuteInEditMode]
@@ -62,7 +63,7 @@ public class CircuitTile : MonoBehaviour
 
         if (prefab != null)
         {
-            tileMesh = Instantiate(prefab) as GameObject;
+            tileMesh = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
             tileMesh.transform.parent = gameObject.transform;
             tileMesh.transform.localPosition = Vector3.zero;
 
@@ -99,5 +100,24 @@ public class CircuitTile : MonoBehaviour
             tileMesh.transform.rotation = Quaternion.Euler(rotator);
             tileFacingDirection = newDirection;
         }
+    }
+
+    public void RevertToPrefab()
+    {
+        Directions.Direction setDir = tileFacingDirection;
+        if(PrefabUtility.ResetToPrefabState(tileMesh))
+        {
+            Vector3 rotator;
+            if (Directions.GetRotationForDirection(setDir, out rotator))
+            {
+                tileMesh.transform.rotation = Quaternion.Euler(rotator);
+                tileFacingDirection = setDir;
+            }
+        }
+        else
+        {
+            Debug.LogError(string.Format("Tile {0} could not be reverted to prefab", gameObject.name));
+        }
+
     }
 }
