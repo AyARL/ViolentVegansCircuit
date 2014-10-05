@@ -13,9 +13,6 @@ namespace Circuit
 
         // Various Default values
         public const float DEFAULT_SPEED = 50.0f;
-
-        // Animator parameters
-        public const string ANIMATOR_PARAMETER_BALL_STATE = "iState";
     }
 
     public class CTags
@@ -31,5 +28,18 @@ namespace Circuit
         public const string ERROR_UNRECOGNIZED_VALUE = "Provided enum value is unrecognized";
         public const string ERROR_NULL_OBJECT = "Failed to find object";
         public const string ERROR_MISSING_COMPONENT = "Missing component";
+    }
+
+    public class CAnimatorConstants
+    {
+        // Ball Face Animation names.
+        public const string ANIMATION_BALL_DIZZY = "BallFace_dizzy";
+        public const string ANIMATION_BALL_HAPPY = "BallFace_Happy";
+        public const string ANIMATION_BALL_HIT = "BallFace_Hit";
+        public const string ANIMATION_BALL_IDLE = "BallFace_Idle";
+        public const string ANIMATION_BALL_UNHAPPY = "BallFace_Unhappy";
+
+        // Animator parameters
+        public const string ANIMATOR_PARAMETER_BALL_STATE = "iState";
     }
 }

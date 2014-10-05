@@ -2,15 +2,6 @@
 using System.Collections;
 using Circuit;
 
-public enum EBallState
-{
-    STATE_NORMAL    = 0,
-    STATE_DIZZY     = 1,
-    STATE_HAPPY     = 2,
-    STATE_UNHAPPY   = 3,
-    STATE_HIT       = 4,
-}
-
 public enum EMovementType
 {
     MOVEMENT_NONE,
@@ -22,6 +13,15 @@ public enum EMovementType
 [ RequireComponent( typeof( Rigidbody ) ) ]
 [ RequireComponent( typeof( Animator ) ) ]
 public class CBall : MonoBehaviour {
+
+    public enum EBallState
+    {
+        STATE_NORMAL    = 0,
+        STATE_DIZZY     = 1,
+        STATE_HAPPY     = 2,
+        STATE_UNHAPPY   = 3,
+        STATE_HIT       = 4,
+    }
 
     private Vector3 m_v3InitialAccelerometerPosition;
 
@@ -153,6 +153,8 @@ public class CBall : MonoBehaviour {
             case EBallState.STATE_NORMAL:
                 break;
             case EBallState.STATE_UNHAPPY:
+                break;
+            case EBallState.STATE_HIT:
                 break;
             default:
                 

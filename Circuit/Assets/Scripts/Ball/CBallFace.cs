@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Circuit;
+using System;
 
 public class CBallFace : MonoBehaviour {
 
     private Animator m_anAnimator;
     private GameObject m_goPlayer;
+    private CBall.EBallState m_eCurrentFaceState;
 
 	/////////////////////////////////////////////////////////////////////////////
     /// Function:               Start
@@ -14,6 +16,9 @@ public class CBallFace : MonoBehaviour {
     {
         // We use this variable for error reporting.
         string strFunctionName = "CBallFace::Start()";
+
+        // Set current face state to default.
+        m_eCurrentFaceState = CBall.EBallState.STATE_NORMAL;
 
         // Get a handle on the ball game object.
 	    m_goPlayer = GameObject.FindGameObjectWithTag( CTags.TAG_PLAYER );
@@ -50,24 +55,47 @@ public class CBallFace : MonoBehaviour {
         // Set the face position.
         transform.position = new Vector3( v3BallPosition.x - fSphereRadius / 2, v3BallPosition.y + fSphereRadius / 2, v3BallPosition.z );
 
-        //if ( Random.Range( 0, 100 ) == 0 )
-        //{
-        //    SetTransition( 1 );
-        //}
+        // Check the ball state and switch animations accordingly.
+        CheckBallState();
 	}
 
     /////////////////////////////////////////////////////////////////////////////
-    /// Function:               SetTransition
+    /// Function:               CheckBallState
     /////////////////////////////////////////////////////////////////////////////
-    public void SetTransition( int iState )
+    public void CheckBallState()
     {
+        // The functions name, this will be used when reporting an error.
+        string strFunctionName = "CBallFace::CheckBallState()";
+
+        // Retrieve the CBall component from the player.
+        CBall cBallComponent = m_goPlayer.GetComponent< CBall >();
+
+        // Check if we found the component and report any issues.
+        if ( false == cBallComponent )
+        {
+            Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof( CBall ) ) );
+
+            // No point in continuing, exit the function.
+            return;
+        }
+
         // Retrieve the current state parameter value
-        int iCurrentValue = m_anAnimator.GetInteger( CConstants.ANIMATOR_PARAMETER_BALL_STATE );
+        CBall.EBallState eBallState = cBallComponent.m_eCurrentState;
 
         // Set the transition
-        if ( iCurrentValue != iState )
+        if ( eBallState != m_eCurrentFaceState )
         {
-            m_anAnimator.SetInteger( CConstants.ANIMATOR_PARAMETER_BALL_STATE, iState );
+            m_anAnimator.SetInteger( CAnimatorConstants.ANIMATOR_PARAMETER_BALL_STATE, ( int )eBallState );
+            m_eCurrentFaceState = eBallState;
+        }
+
+        // Check if the animation has finished playing and switch to idle if it has.
+        if ( eBallState != CBall.EBallState.STATE_NORMAL )
+        {
+            if ( m_anAnimator.GetCurrentAnimatorStateInfo(0).length < m_anAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime )
+            {
+                m_anAnimator.SetInteger( CAnimatorConstants.ANIMATOR_PARAMETER_BALL_STATE, ( int )CBall.EBallState.STATE_NORMAL );
+            }
         }
     }
 
