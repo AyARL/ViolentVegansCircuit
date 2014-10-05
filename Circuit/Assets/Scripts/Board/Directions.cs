@@ -83,7 +83,7 @@ public static class Directions
         int inputRotation = DirectionToOffset(boardDirection);
         int tileRotation = DirectionToOffset(forTile.TileFacingDirection);
 
-        int localRotation = inputRotation + tileRotation;
+        int localRotation = inputRotation + (360 - tileRotation);
         while (localRotation >= 360)
         {
             localRotation -= 360;
@@ -97,13 +97,13 @@ public static class Directions
         int inputRotation = DirectionToOffset(localDirection);
         int tileRotation = DirectionToOffset(forTile.TileFacingDirection);
 
-        int localRotation = inputRotation + tileRotation;
-        while (localRotation >= 360)
+        int boardRotation = inputRotation + tileRotation;
+        while (boardRotation >= 360)
         {
-            localRotation -= 360;
+            boardRotation -= 360;
         }
 
-        return OffsetToDirection(localRotation);
+        return OffsetToDirection(boardRotation);
     }
 
     public static int DirectionToOffset(Direction dir)

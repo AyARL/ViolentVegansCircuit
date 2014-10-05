@@ -14,7 +14,7 @@ public class Impulse : MonoBehaviour
 
     public float Speed { get; set; }
 
-    public void Initialise(PathMarker origin, PathMarker target)
+    public void PutOnSegment(PathMarker origin, PathMarker target)
     {
         currentOrigin = origin;
         currentTarget = target;

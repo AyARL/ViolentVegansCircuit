@@ -31,16 +31,17 @@ public class BoardFlowControl : MonoBehaviour
     {
         ResetImpulses();
 
-        var startTiles = board.Tiles.Where(t => t.TileType == CircuitTile.CircuitTileType.Tile_Start).Select(t => t.gameObject.GetComponent<CircuitTileFlow>());
-        foreach(CircuitTileFlow tile in startTiles)
+        var startTiles = board.GetStartTiles().Select(t => t.GetComponent<CircuitTileFlow>());
+        foreach (CircuitTileFlow tile in startTiles)
         {
-            StartPathMarker startMarker = tile.GetEntryMarker as StartPathMarker;
-            if(startMarker != null)
+            StartPathMarker startMarker = tile.EntryMarker as StartPathMarker;
+            if (startMarker != null)
             {
                 GameObject impulse = Instantiate(ImpulsePrefab) as GameObject;
                 Impulse impulseComp = impulse.GetComponent<Impulse>();
-                impulseComp.Initialise(startMarker, startMarker.NextMarker);
+                impulseComp.PutOnSegment(startMarker, startMarker.NextMarker);
                 impulseComp.Speed = impulseSpeed;
+                impulseComp.OnMarkerReached = m => ImpulseReachedTarget(impulseComp, m);    // Curry ;D
 
                 impulses.Add(impulseComp);
             }
@@ -53,15 +54,163 @@ public class BoardFlowControl : MonoBehaviour
 
     public void RunImpulses()
     {
-        foreach(Impulse i in impulses)
+        foreach (Impulse i in impulses)
         {
             i.RunImpulse();
         }
     }
 
+    private void ImpulseReachedTarget(Impulse impulse, PathMarker targetMarker)
+    {
+        if (TerminatorMarkerCheck(impulse, targetMarker)) { return; }
+
+        if (PathPathMarkerCheck(impulse, targetMarker)) { return; }
+
+        if (EndMarkerCheck(impulse, targetMarker)) { return; }
+
+        if (OutConnectorCheck(impulse, targetMarker)) { return; }
+
+        if (IntersectionConnectorCheck(impulse, targetMarker)) { return; }
+
+        Debug.Log(string.Format("Unrecognised Target Marker: {0}", targetMarker));
+    }
+
+    #region MarkerChecks
+
+    private bool PathPathMarkerCheck(Impulse impulse, PathMarker targetMarker)
+    {
+        PathPathMarker pathMarker = targetMarker as PathPathMarker;
+        if (pathMarker != null)
+        {
+            impulse.PutOnSegment(pathMarker, pathMarker.NextMarker);
+            impulse.RunImpulse();
+        }
+
+        return false;
+    }
+
+    private bool EndMarkerCheck(Impulse impulse, PathMarker targetMarker)
+    {
+        EndPathMarker endMarker = targetMarker as EndPathMarker;
+        if (endMarker != null)
+        {
+            CircuitTile tile = endMarker.GetComponentInParent<CircuitTile>();
+
+            CircuitTile nextTile = board.GetTileInDirection(tile, Directions.LocalToBoardDirection(endMarker.ExitDirection, tile));
+            if (nextTile != null)
+            {
+                CircuitTileFlow tileFlow = nextTile.GetComponent<CircuitTileFlow>();
+
+                StartPathMarker startMarker = tileFlow.EntryMarker as StartPathMarker;
+                if (startMarker != null)
+                {
+                    impulse.PutOnSegment(startMarker, startMarker.NextMarker);
+                    impulse.RunImpulse();
+                }
+                else
+                {
+                    Debug.LogException(new System.NullReferenceException(string.Format("Start tile {0} did not provide a StartPathMarker", tile.gameObject)));
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TerminatorMarkerCheck(Impulse impulse, PathMarker targetMarker)
+    {
+        TerminatorPathMarker terminatorMarker = targetMarker as TerminatorPathMarker;
+        if (terminatorMarker != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool OutConnectorCheck(Impulse impulse, PathMarker targetMarker)
+    {
+        OutConnectorPathMarker outMarker = targetMarker as OutConnectorPathMarker;
+        if (outMarker != null)
+        {
+            CircuitTile tile = outMarker.GetComponentInParent<CircuitTile>();
+            Directions.Direction entryDirection = Directions.LocalToBoardDirection(Directions.Direction.SOUTH, tile);
+
+            foreach (Directions.Direction dir in System.Enum.GetValues(typeof(Directions.Direction)))
+            {
+                if (dir == entryDirection)
+                {
+                    continue;
+                }
+
+                if (TrySkipToConnector(impulse, tile, dir))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool IntersectionConnectorCheck(Impulse impulse, PathMarker targetMarker)
+    {
+        IntersectionPathMarker intersectionMarker = targetMarker as IntersectionPathMarker;
+        if(intersectionMarker != null)
+        {
+            bool first = true;
+            foreach(PathMarker exit in intersectionMarker.IntersectionExits)
+            {
+                if(first)
+                {
+                    impulse.PutOnSegment(intersectionMarker, exit);
+                    impulse.RunImpulse();
+                    first = false;
+                }
+                else
+                {
+                    GameObject newImpulse = Instantiate(ImpulsePrefab) as GameObject;
+                    Impulse impulseComp = newImpulse.GetComponent<Impulse>();
+                    impulseComp.PutOnSegment(intersectionMarker, exit);
+                    impulseComp.Speed = impulseSpeed;
+                    impulseComp.OnMarkerReached = m => ImpulseReachedTarget(impulseComp, m);    // Curry ;D
+
+                    impulses.Add(impulseComp);
+
+                    impulseComp.RunImpulse();
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+    
+    #endregion
+
+    private bool TrySkipToConnector(Impulse impulse, CircuitTile currentTile, Directions.Direction boardDirection)
+    {
+        CircuitTile nextTile = board.GetTileInDirection(currentTile, boardDirection);
+        if (nextTile != null)
+        {
+            CircuitTileFlow tileFlow = nextTile.GetComponent<CircuitTileFlow>();
+
+            InConnectorPathMarker inMarker = tileFlow.EntryMarker as InConnectorPathMarker;
+            if (inMarker != null)
+            {
+                impulse.PutOnSegment(inMarker, inMarker.NextMarker);
+                impulse.RunImpulse();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void ResetImpulses()
     {
-        foreach(Impulse i in impulses.ToList())
+        foreach (Impulse i in impulses.ToList())
         {
             Destroy(i.gameObject);
         }

@@ -7,7 +7,7 @@ public class CircuitTileFlow : MonoBehaviour
 {
     [SerializeField]
     private PathMarker entryMarker = null;
-    public PathMarker GetEntryMarker { get { return entryMarker; } }
+    public PathMarker EntryMarker { get { return entryMarker; } }
 
     public enum EntryType { Entry_Invalid, Entry_Flow, Entry_Connector }
     public EntryType TypeOfEntry { get; private set; }

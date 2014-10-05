@@ -5,6 +5,7 @@ public class PathPathMarker : PathMarker
 {
     [SerializeField]
     private PathMarker nextMarker = null;
+    public PathMarker NextMarker { get { return nextMarker; } }
 
     protected override void OnDrawGizmos()
     {

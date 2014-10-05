@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class CircuitBoard : MonoBehaviour
 {
@@ -34,5 +35,59 @@ public class CircuitBoard : MonoBehaviour
 
             tiles.Add(tileComp);
         }
+    }
+
+    public IEnumerable<CircuitTile> GetStartTiles()
+    {
+       return tiles.Where(t => t.TileType == CircuitTile.CircuitTileType.Tile_Start);
+    }
+
+    public CircuitTile GetTileInDirection(CircuitTile origin, Directions.Direction boardDirection)
+    {
+        int x, y;
+        int index = -1;
+        if(IndexToXY(tiles.IndexOf(origin), out x, out y))
+        {
+            switch(boardDirection)
+            {
+                case Directions.Direction.NORTH:
+                    y += 1;
+                    break;
+                case Directions.Direction.EAST:
+                    x += 1;
+                    break;
+                case Directions.Direction.SOUTH:
+                    y -= 1;
+                    break;
+                case Directions.Direction.WEST:
+                    x -= 1;
+                    break;
+                default:
+                    return null;
+            }
+        }
+
+        if (XYtoIndex(x, y, out index))
+        {
+            return tiles[index];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private bool IndexToXY(int index, out int x, out int y)
+    {
+        x = index % width;
+        y = index / width;
+
+        return index >= 0 && index < tiles.Count;
+    }
+
+    private bool XYtoIndex(int x, int y, out int index)
+    {
+        index = y * width + x;
+        return index >= 0 && index < tiles.Count;
     }
 }

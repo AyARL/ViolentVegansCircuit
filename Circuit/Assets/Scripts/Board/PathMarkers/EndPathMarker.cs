@@ -5,6 +5,7 @@ public class EndPathMarker : PathMarker
 {
     [SerializeField]
     private Directions.Direction exitDirection = Directions.Direction.NORTH;
+    public Directions.Direction ExitDirection { get { return exitDirection; } }
 
     protected override void OnDrawGizmos()
     {
