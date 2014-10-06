@@ -53,7 +53,9 @@ public class CBallFace : MonoBehaviour {
         float fSphereRadius = Mathf.Max( cSphereCollider.transform.lossyScale.x, cSphereCollider.transform.lossyScale.y, cSphereCollider.transform.lossyScale.z ) * cSphereCollider.radius;
 
         // Set the face position.
-        transform.position = new Vector3( v3BallPosition.x - fSphereRadius / 2, v3BallPosition.y + fSphereRadius / 2, v3BallPosition.z );
+        //transform.position = new Vector3( v3BallPosition.x - fSphereRadius / 2, v3BallPosition.y + fSphereRadius / 2, v3BallPosition.z );
+
+        transform.parent = m_goPlayer.transform;
 
         // Check the ball state and switch animations accordingly.
         CheckBallState();
