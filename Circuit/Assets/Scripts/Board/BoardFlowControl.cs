@@ -84,6 +84,7 @@ public class BoardFlowControl : MonoBehaviour
         {
             impulse.PutOnSegment(pathMarker, pathMarker.NextMarker);
             impulse.RunImpulse();
+            return true;
         }
 
         return false;
