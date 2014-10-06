@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using System.Collections;
 
 [ExecuteInEditMode]
@@ -34,11 +36,7 @@ public class CircuitTile : MonoBehaviour
     [SerializeField] [HideInInspector]
     private GameObject tileMesh;
 
-    void Start()
-    {
-        return;
-    }
-
+#if UNITY_EDITOR
     public void SpawnTileOfType(CircuitTileType tileType)
     {
         if (prefabResource == null)
@@ -101,4 +99,6 @@ public class CircuitTile : MonoBehaviour
             tileFacingDirection = newDirection;
         }
     }
+
+#endif
 }

@@ -16,6 +16,7 @@ public class CircuitBoard : MonoBehaviour
 
     float tileSize = 10f;
 
+#if UNITY_EDITOR
     public void Initialise()
     {
         for (int i = 0; i < width * height; i++)
@@ -36,6 +37,7 @@ public class CircuitBoard : MonoBehaviour
             tiles.Add(tileComp);
         }
     }
+#endif
 
     public IEnumerable<CircuitTile> GetStartTiles()
     {
