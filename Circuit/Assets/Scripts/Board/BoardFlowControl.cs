@@ -12,9 +12,12 @@ public class BoardFlowControl : MonoBehaviour
     float impulseSpeed = 1.0f;
 
     [SerializeField]
-    private GameObject ImpulsePrefab = null;
+    private GameObject impulsePrefab = null;
 
     [SerializeField]
+    private GameObject ballTether = null;
+    public GameObject BallTether { get { return ballTether; } }
+
     private List<Impulse> impulses;
 
     private void Reset()
@@ -37,7 +40,7 @@ public class BoardFlowControl : MonoBehaviour
             StartPathMarker startMarker = tile.EntryMarker as StartPathMarker;
             if (startMarker != null)
             {
-                GameObject impulse = Instantiate(ImpulsePrefab) as GameObject;
+                GameObject impulse = Instantiate(impulsePrefab) as GameObject;
                 Impulse impulseComp = impulse.GetComponent<Impulse>();
                 impulseComp.PutOnSegment(startMarker, startMarker.NextMarker);
                 impulseComp.Speed = impulseSpeed;
@@ -172,7 +175,7 @@ public class BoardFlowControl : MonoBehaviour
                 }
                 else
                 {
-                    GameObject newImpulse = Instantiate(ImpulsePrefab) as GameObject;
+                    GameObject newImpulse = Instantiate(impulsePrefab) as GameObject;
                     Impulse impulseComp = newImpulse.GetComponent<Impulse>();
                     impulseComp.PutOnSegment(intersectionMarker, exit);
                     impulseComp.Speed = impulseSpeed;
