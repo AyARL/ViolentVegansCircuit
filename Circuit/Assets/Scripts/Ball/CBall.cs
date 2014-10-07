@@ -64,7 +64,7 @@ public class CBall : MonoBehaviour {
         if ( cCollision.gameObject.tag == CTags.TAG_TILE )
         {
             // Send a message to the tile containing the vector3 position.
-            cCollision.gameObject.SendMessage( "OnReceiveMessage", transform.position );
+            cCollision.gameObject.SendMessageUpwards("OnReceiveMessage", transform.position,SendMessageOptions.DontRequireReceiver);
         }
     }
 

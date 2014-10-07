@@ -78,4 +78,13 @@ public class CircuitTileFlow : MonoBehaviour
             }
         }
     }
+
+    private void OnReceiveMessage(Vector3 ballPos)
+    {
+        if(TypeOfEntry == EntryType.Entry_Connector || TypeOfExit == ExitType.Exit_Connector)
+        {
+
+        }
+        
+    }
 }
