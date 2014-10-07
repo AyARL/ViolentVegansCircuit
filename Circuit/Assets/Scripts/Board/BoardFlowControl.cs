@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,9 @@ public class BoardFlowControl : MonoBehaviour
     public GameObject BallTether { get { return ballTether; } }
 
     private List<Impulse> impulses;
+
+    // Called when impulse is destroyed by reaching empty connector, passes number of remaining impulses as parameter
+    public UnityAction<int> OnImpulseRemoved { get; set; }
 
     private void Reset()
     {
@@ -239,5 +243,9 @@ public class BoardFlowControl : MonoBehaviour
     {
         impulses.Remove(impulse);
         Destroy(impulse.gameObject);
+        if(OnImpulseRemoved != null)
+        {
+            OnImpulseRemoved(impulses.Count);
+        }
     }
 }
