@@ -15,6 +15,11 @@ public class GameController : MonoBehaviour
     private CircuitBoard circuitBoard = null;
     private BoardFlowControl flowControl = null;
 
+    [SerializeField]
+    private GameObject Player = null;
+    [SerializeField]
+    private GameObject PlayerFace = null;
+
     private bool WinConditionMet = false;
     private bool FailConditionMet = false;
 
@@ -51,6 +56,7 @@ public class GameController : MonoBehaviour
     {
         flowControl.OnImpulseRemoved += ImpulseLost;
 
+        // Spawn tiles
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
         if (shuffledDrop)
         {
@@ -65,8 +71,10 @@ public class GameController : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        flowControl.SpawnImpulse();
-        flowControl.RunImpulses();
+        PlayerFace.SetActive(true);
+        Player.SetActive(true);
+
+        yield return new WaitForSeconds(1f);
 
         gameState = GameState.Game_Play;
         yield break;
@@ -74,6 +82,10 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Play()
     {
+        // Spawn Impulse
+        flowControl.SpawnImpulse();
+        flowControl.RunImpulses();
+
         while (true)
         {
             yield return null;
