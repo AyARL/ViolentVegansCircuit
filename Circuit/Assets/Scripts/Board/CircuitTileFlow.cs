@@ -15,7 +15,9 @@ public class CircuitTileFlow : MonoBehaviour
     public enum ExitType { Exit_Invalid, Exit_Flow, Exit_Connector, Exit_Terminator }
     public ExitType TypeOfExit { get; private set; }
 
-    public GameObject ballTether = null;
+    private GameObject ballTether = null;
+
+    public bool BallAttached { get; private set; }
 
     private void Reset()
     {
@@ -106,13 +108,14 @@ public class CircuitTileFlow : MonoBehaviour
         if (ballTether == null)
         {
             ballTether = Instantiate(tether, startPos, Quaternion.identity) as GameObject;
+            BallAttached = true;
         }
 
         if (ballTether != null)
         {
+            float radAngle = Mathf.Deg2Rad * angle;
             foreach (ParticleSystem ps in ballTether.GetComponentsInChildren<ParticleSystem>())
             {
-                float radAngle = Mathf.Deg2Rad * angle;
                 ps.gameObject.transform.localPosition = new Vector3(tetherScale / 2 * Mathf.Cos(radAngle), 0, tetherScale / 2 * -Mathf.Sin(radAngle));
                 ps.startSize = tetherScale;
                 ps.startRotation = radAngle;
@@ -126,6 +129,7 @@ public class CircuitTileFlow : MonoBehaviour
         {
             Destroy(ballTether);
             ballTether = null;
+            BallAttached = false;
         }
     }
 }

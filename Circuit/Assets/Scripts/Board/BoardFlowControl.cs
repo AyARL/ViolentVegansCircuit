@@ -139,6 +139,12 @@ public class BoardFlowControl : MonoBehaviour
         OutConnectorPathMarker outMarker = targetMarker as OutConnectorPathMarker;
         if (outMarker != null)
         {
+            if(!outMarker.GetComponentInParent<CircuitTileFlow>().BallAttached)
+            {
+                RemoveImpulse(impulse);
+                return true;
+            }
+
             CircuitTile tile = outMarker.GetComponentInParent<CircuitTile>();
             Directions.Direction entryDirection = Directions.LocalToBoardDirection(Directions.Direction.SOUTH, tile);
 
@@ -162,12 +168,12 @@ public class BoardFlowControl : MonoBehaviour
     private bool IntersectionConnectorCheck(Impulse impulse, PathMarker targetMarker)
     {
         IntersectionPathMarker intersectionMarker = targetMarker as IntersectionPathMarker;
-        if(intersectionMarker != null)
+        if (intersectionMarker != null)
         {
             bool first = true;
-            foreach(PathMarker exit in intersectionMarker.IntersectionExits)
+            foreach (PathMarker exit in intersectionMarker.IntersectionExits)
             {
-                if(first)
+                if (first)
                 {
                     impulse.PutOnSegment(intersectionMarker, exit);
                     impulse.RunImpulse();
@@ -191,11 +197,12 @@ public class BoardFlowControl : MonoBehaviour
 
         return false;
     }
-    
+
     #endregion
 
     private bool TrySkipToConnector(Impulse impulse, CircuitTile currentTile, Directions.Direction boardDirection)
     {
+
         CircuitTile nextTile = board.GetTileInDirection(currentTile, boardDirection);
         if (nextTile != null)
         {
@@ -204,8 +211,15 @@ public class BoardFlowControl : MonoBehaviour
             InConnectorPathMarker inMarker = tileFlow.EntryMarker as InConnectorPathMarker;
             if (inMarker != null)
             {
-                impulse.PutOnSegment(inMarker, inMarker.NextMarker);
-                impulse.RunImpulse();
+                if (tileFlow.BallAttached)
+                {
+                    impulse.PutOnSegment(inMarker, inMarker.NextMarker);
+                    impulse.RunImpulse();
+                }
+                else
+                {
+                    RemoveImpulse(impulse);
+                }
                 return true;
             }
         }
@@ -219,5 +233,11 @@ public class BoardFlowControl : MonoBehaviour
             Destroy(i.gameObject);
         }
         impulses.Clear();
+    }
+
+    private void RemoveImpulse(Impulse impulse)
+    {
+        impulses.Remove(impulse);
+        Destroy(impulse.gameObject);
     }
 }
