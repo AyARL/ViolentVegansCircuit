@@ -23,7 +23,8 @@ public class GameController : MonoBehaviour
     private bool WinConditionMet = false;
     private bool FailConditionMet = false;
 
-    private int numberOfTargets = -1;
+    private int endPointsTotal = -1;
+    private int numberOfInactiveEndPoints = -1;
 
     private void Start()
     {
@@ -55,6 +56,10 @@ public class GameController : MonoBehaviour
     private IEnumerator Game_Setup()
     {
         flowControl.OnImpulseRemoved += ImpulseLost;
+        flowControl.OnEndPointActivated += EndPointActivated;
+
+        endPointsTotal = circuitBoard.GetEndTilesCount();
+        numberOfInactiveEndPoints = endPointsTotal;
 
         // Spawn tiles
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
@@ -107,6 +112,9 @@ public class GameController : MonoBehaviour
     private IEnumerator Game_Win()
     {
         flowControl.OnImpulseRemoved -= ImpulseLost;
+        flowControl.OnEndPointActivated -= EndPointActivated;
+
+        Debug.Log("Win!");
         while (true)
         {
             yield return null;
@@ -116,6 +124,7 @@ public class GameController : MonoBehaviour
     private IEnumerator Game_Fail()
     {
         flowControl.OnImpulseRemoved -= ImpulseLost;
+        flowControl.OnEndPointActivated -= EndPointActivated;
 
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
         if (shuffledDrop)
@@ -130,11 +139,27 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private void EndPointActivated()
+    {
+        numberOfInactiveEndPoints -= 1;
+        if(numberOfInactiveEndPoints == 0)
+        {
+            WinConditionMet = true;
+        }
+    }
+
     private void ImpulseLost(int impulsesLeft)
     {
         if (impulsesLeft == 0)
         {
-            FailConditionMet = true;
+            if (numberOfInactiveEndPoints == endPointsTotal)
+            {
+                FailConditionMet = true;
+            }
+            else
+            {
+                WinConditionMet = true;
+            }
         }
     }
 }

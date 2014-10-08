@@ -24,6 +24,9 @@ public class BoardFlowControl : MonoBehaviour
     // Called when impulse is destroyed by reaching empty connector, passes number of remaining impulses as parameter
     public UnityAction<int> OnImpulseRemoved { get; set; }
 
+    // Called when the impulse reaches 
+    public UnityAction OnEndPointActivated { get; set; }
+
     private void Reset()
     {
         board = gameObject.GetComponent<CircuitBoard>();
@@ -132,6 +135,12 @@ public class BoardFlowControl : MonoBehaviour
         TerminatorPathMarker terminatorMarker = targetMarker as TerminatorPathMarker;
         if (terminatorMarker != null)
         {
+            EndTileStateControl endControl = targetMarker.GetComponentInParent<EndTileStateControl>();
+            if(!endControl.Activated)
+            {
+                endControl.TileActivated();
+                EndPointActivated(impulse);
+            }
             return true;
         }
 
@@ -247,5 +256,14 @@ public class BoardFlowControl : MonoBehaviour
         {
             OnImpulseRemoved(impulses.Count);
         }
+    }
+
+    private void EndPointActivated(Impulse impulse)
+    {
+        if(OnEndPointActivated != null)
+        {
+            OnEndPointActivated();
+        }
+        RemoveImpulse(impulse);
     }
 }
