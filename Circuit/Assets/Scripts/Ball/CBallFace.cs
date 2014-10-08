@@ -54,6 +54,7 @@ public class CBallFace : MonoBehaviour {
 
         // Set the face position.
         //transform.position = new Vector3( v3BallPosition.x - fSphereRadius / 2, v3BallPosition.y + fSphereRadius / 2, v3BallPosition.z );
+
         transform.parent = m_goPlayer.transform;
 
         // Check the ball state and switch animations accordingly.

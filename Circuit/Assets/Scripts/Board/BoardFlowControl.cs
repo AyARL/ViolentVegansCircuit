@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,19 @@ public class BoardFlowControl : MonoBehaviour
     float impulseSpeed = 1.0f;
 
     [SerializeField]
-    private GameObject ImpulsePrefab = null;
+    private GameObject impulsePrefab = null;
 
     [SerializeField]
+    private GameObject ballTether = null;
+    public GameObject BallTether { get { return ballTether; } }
+
     private List<Impulse> impulses;
+
+    // Called when impulse is destroyed by reaching empty connector, passes number of remaining impulses as parameter
+    public UnityAction<int> OnImpulseRemoved { get; set; }
+
+    // Called when the impulse reaches 
+    public UnityAction OnEndPointActivated { get; set; }
 
     private void Reset()
     {
@@ -37,7 +47,7 @@ public class BoardFlowControl : MonoBehaviour
             StartPathMarker startMarker = tile.EntryMarker as StartPathMarker;
             if (startMarker != null)
             {
-                GameObject impulse = Instantiate(ImpulsePrefab) as GameObject;
+                GameObject impulse = Instantiate(impulsePrefab) as GameObject;
                 Impulse impulseComp = impulse.GetComponent<Impulse>();
                 impulseComp.PutOnSegment(startMarker, startMarker.NextMarker);
                 impulseComp.Speed = impulseSpeed;
@@ -125,6 +135,12 @@ public class BoardFlowControl : MonoBehaviour
         TerminatorPathMarker terminatorMarker = targetMarker as TerminatorPathMarker;
         if (terminatorMarker != null)
         {
+            EndTileStateControl endControl = targetMarker.GetComponentInParent<EndTileStateControl>();
+            if(!endControl.Activated)
+            {
+                endControl.TileActivated();
+                EndPointActivated(impulse);
+            }
             return true;
         }
 
@@ -136,6 +152,12 @@ public class BoardFlowControl : MonoBehaviour
         OutConnectorPathMarker outMarker = targetMarker as OutConnectorPathMarker;
         if (outMarker != null)
         {
+            if(!outMarker.GetComponentInParent<CircuitTileFlow>().BallAttached)
+            {
+                RemoveImpulse(impulse);
+                return true;
+            }
+
             CircuitTile tile = outMarker.GetComponentInParent<CircuitTile>();
             Directions.Direction entryDirection = Directions.LocalToBoardDirection(Directions.Direction.SOUTH, tile);
 
@@ -159,12 +181,12 @@ public class BoardFlowControl : MonoBehaviour
     private bool IntersectionConnectorCheck(Impulse impulse, PathMarker targetMarker)
     {
         IntersectionPathMarker intersectionMarker = targetMarker as IntersectionPathMarker;
-        if(intersectionMarker != null)
+        if (intersectionMarker != null)
         {
             bool first = true;
-            foreach(PathMarker exit in intersectionMarker.IntersectionExits)
+            foreach (PathMarker exit in intersectionMarker.IntersectionExits)
             {
-                if(first)
+                if (first)
                 {
                     impulse.PutOnSegment(intersectionMarker, exit);
                     impulse.RunImpulse();
@@ -172,7 +194,7 @@ public class BoardFlowControl : MonoBehaviour
                 }
                 else
                 {
-                    GameObject newImpulse = Instantiate(ImpulsePrefab) as GameObject;
+                    GameObject newImpulse = Instantiate(impulsePrefab) as GameObject;
                     Impulse impulseComp = newImpulse.GetComponent<Impulse>();
                     impulseComp.PutOnSegment(intersectionMarker, exit);
                     impulseComp.Speed = impulseSpeed;
@@ -188,11 +210,12 @@ public class BoardFlowControl : MonoBehaviour
 
         return false;
     }
-    
+
     #endregion
 
     private bool TrySkipToConnector(Impulse impulse, CircuitTile currentTile, Directions.Direction boardDirection)
     {
+
         CircuitTile nextTile = board.GetTileInDirection(currentTile, boardDirection);
         if (nextTile != null)
         {
@@ -201,8 +224,15 @@ public class BoardFlowControl : MonoBehaviour
             InConnectorPathMarker inMarker = tileFlow.EntryMarker as InConnectorPathMarker;
             if (inMarker != null)
             {
-                impulse.PutOnSegment(inMarker, inMarker.NextMarker);
-                impulse.RunImpulse();
+                if (tileFlow.BallAttached)
+                {
+                    impulse.PutOnSegment(inMarker, inMarker.NextMarker);
+                    impulse.RunImpulse();
+                }
+                else
+                {
+                    RemoveImpulse(impulse);
+                }
                 return true;
             }
         }
@@ -216,5 +246,24 @@ public class BoardFlowControl : MonoBehaviour
             Destroy(i.gameObject);
         }
         impulses.Clear();
+    }
+
+    private void RemoveImpulse(Impulse impulse)
+    {
+        impulses.Remove(impulse);
+        Destroy(impulse.gameObject);
+        if(OnImpulseRemoved != null)
+        {
+            OnImpulseRemoved(impulses.Count);
+        }
+    }
+
+    private void EndPointActivated(Impulse impulse)
+    {
+        if(OnEndPointActivated != null)
+        {
+            OnEndPointActivated();
+        }
+        RemoveImpulse(impulse);
     }
 }

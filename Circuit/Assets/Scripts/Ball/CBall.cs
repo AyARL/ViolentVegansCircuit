@@ -56,6 +56,32 @@ public class CBall : MonoBehaviour {
     }
 
     /////////////////////////////////////////////////////////////////////////////
+    /// Function:               OnCollisionStay
+    /////////////////////////////////////////////////////////////////////////////
+    void OnCollisionStay( Collision cCollision)
+    {
+        // Check if the detected collision is a tile.
+        if ( cCollision.gameObject.tag == CTags.TAG_TILE )
+        {
+            // Send a message to the tile containing the vector3 position.
+            cCollision.gameObject.SendMessageUpwards("OnReceiveMessage", transform.position,SendMessageOptions.DontRequireReceiver);
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               OnCollisionExit
+    /////////////////////////////////////////////////////////////////////////////
+    void OnCollisionExit(Collision cCollision)
+    {
+        // Check if the detected collision is a tile.
+        if (cCollision.gameObject.tag == CTags.TAG_TILE)
+        {
+            // Send a message to the tile containing the vector3 position.
+            cCollision.gameObject.SendMessageUpwards("OnBallExit", transform.position, SendMessageOptions.DontRequireReceiver);
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
     /// Function:               RunMovementLogic
     /////////////////////////////////////////////////////////////////////////////
     public void RunMovementLogic()

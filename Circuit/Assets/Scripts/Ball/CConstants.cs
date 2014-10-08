@@ -19,6 +19,7 @@ namespace Circuit
     {
         // List of commonly used tags.
         public const string TAG_PLAYER = "Player";
+        public const string TAG_TILE = "Tile";
     }
 
     public class CErrorStrings

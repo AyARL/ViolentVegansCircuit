@@ -15,6 +15,10 @@ public class CircuitTileFlow : MonoBehaviour
     public enum ExitType { Exit_Invalid, Exit_Flow, Exit_Connector, Exit_Terminator }
     public ExitType TypeOfExit { get; private set; }
 
+    private GameObject ballTether = null;
+
+    public bool BallAttached { get; private set; }
+
     private void Reset()
     {
         Initialise();
@@ -76,6 +80,56 @@ public class CircuitTileFlow : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    private void OnReceiveMessage(Vector3 ballPos)
+    {
+        if (TypeOfExit == ExitType.Exit_Connector || TypeOfEntry == EntryType.Entry_Connector)
+        {
+            UpdateBallTether(gameObject.transform.position, ballPos);
+        }
+        
+    }
+
+    private void UpdateBallTether(Vector3 startPos, Vector3 target)
+    {
+        BoardFlowControl flowControl = GetComponentInParent<BoardFlowControl>();
+        GameObject tether = flowControl.BallTether;
+
+        float tetherScale = Vector3.Distance(startPos, target);
+        float angle = Vector3.Angle(Vector3.right, new Vector3(target.x - startPos.x, 0, target.z - startPos.z));
+        float dot = Vector3.Dot(Vector3.forward, target - startPos);
+        if (dot > 0)
+        {
+            angle = 360 - angle;
+        }
+
+        if (ballTether == null)
+        {
+            ballTether = Instantiate(tether, startPos, Quaternion.identity) as GameObject;
+            BallAttached = true;
+        }
+
+        if (ballTether != null)
+        {
+            float radAngle = Mathf.Deg2Rad * angle;
+            foreach (ParticleSystem ps in ballTether.GetComponentsInChildren<ParticleSystem>())
+            {
+                ps.gameObject.transform.localPosition = new Vector3(tetherScale / 2 * Mathf.Cos(radAngle), 0, tetherScale / 2 * -Mathf.Sin(radAngle));
+                ps.startSize = tetherScale;
+                ps.startRotation = radAngle;
+            }
+        }
+    }
+
+    private void OnBallExit(Vector3 ballPos)
+    {
+        if (ballTether != null)
+        {
+            Destroy(ballTether);
+            ballTether = null;
+            BallAttached = false;
         }
     }
 }

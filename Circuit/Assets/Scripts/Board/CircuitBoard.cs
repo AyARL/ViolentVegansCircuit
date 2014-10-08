@@ -44,6 +44,16 @@ public class CircuitBoard : MonoBehaviour
        return tiles.Where(t => t.TileType == CircuitTile.CircuitTileType.Tile_Start);
     }
 
+    public IEnumerable<CircuitTile> GetEndTiles()
+    {
+        return tiles.Where(t => t.TileType == CircuitTile.CircuitTileType.Tile_End);
+    }
+
+    public int GetEndTilesCount()
+    {
+        return GetEndTiles().ToArray().Length;
+    }
+
     public CircuitTile GetTileInDirection(CircuitTile origin, Directions.Direction boardDirection)
     {
         int x, y;
