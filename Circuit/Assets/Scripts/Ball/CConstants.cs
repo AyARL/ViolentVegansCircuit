@@ -13,6 +13,7 @@ namespace Circuit
 
         // Various Default values
         public const float DEFAULT_SPEED = 50.0f;
+        public const float MAX_ROTATION_ANGLE = 15.0f;
     }
 
     public class CTags
