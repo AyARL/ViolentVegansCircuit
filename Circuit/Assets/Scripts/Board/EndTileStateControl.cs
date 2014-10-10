@@ -30,7 +30,7 @@ public class EndTileStateControl : MonoBehaviour
     {
         float step = 0f;
 
-        while(true)
+        while(Activated)
         {
             renderer.material.SetFloat("_Blend", step);
             step = Mathf.PingPong(Time.time, duration);
