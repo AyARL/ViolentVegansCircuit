@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Linq;
+using Pathfinding.Serialization.JsonFx;
 
 public class GameController : MonoBehaviour
 {
     public bool shuffledDrop = false;   //not staying here
 
-    public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail }
+    public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail, Game_ScoreDisplay }
     private GameState gameState;
 
     [SerializeField]
@@ -115,10 +116,11 @@ public class GameController : MonoBehaviour
         flowControl.OnEndPointActivated -= EndPointActivated;
 
         Debug.Log("Win!");
-        while (true)
-        {
-            yield return null;
-        }
+
+        SetLevelStatus(true);
+        Application.LoadLevelAdditive("LevelEndScreen");
+        gameState = GameState.Game_ScoreDisplay;
+        yield break;
     }
 
     private IEnumerator Game_Fail()
@@ -136,6 +138,18 @@ public class GameController : MonoBehaviour
         {
             circuitBoard.Tiles[i].GetComponentInChildren<Animator>().SetTrigger("FallOut");
             yield return new WaitForSeconds(0.05f);
+        }
+
+        SetLevelStatus(false);
+        Application.LoadLevelAdditive("LevelEndScreen");
+        gameState = GameState.Game_ScoreDisplay;
+    }
+
+    private IEnumerator Game_ScoreDisplay()
+    {
+        while(true)
+        {
+            yield return null;
         }
     }
 
@@ -161,5 +175,18 @@ public class GameController : MonoBehaviour
                 WinConditionMet = true;
             }
         }
+    }
+
+    private void SetLevelStatus(bool levelWon)
+    {
+        string levelStatus = JsonWriter.Serialize(new CompletedLevelStatus()
+        {
+            LevelIndex = Application.loadedLevel,
+            LevelWon = levelWon,
+            ActivatedChips = endPointsTotal - numberOfInactiveEndPoints,
+            MaxChips = endPointsTotal
+        });
+
+        PlayerPrefs.SetString("LevelStatus", levelStatus);
     }
 }
