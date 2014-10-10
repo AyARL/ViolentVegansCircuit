@@ -3,7 +3,17 @@ using System.Collections;
 
 public class EndTileStateControl : MonoBehaviour
 {
+    [SerializeField]
+    private Material inactiveMaterial = null;
+
+    [SerializeField]
+    private Material activeMaterial = null;
+
+    [SerializeField]
+    private float duration = 1f;
+
     public bool Activated { get; private set; }
+
 
     private void Start()
     {
@@ -13,6 +23,18 @@ public class EndTileStateControl : MonoBehaviour
     public void TileActivated()
     {
         Activated = true;
-        // Do the animation
+        StartCoroutine(AnimateTile());
+    }
+
+    private IEnumerator AnimateTile()
+    {
+        float step = 0f;
+
+        while(true)
+        {
+            renderer.material.SetFloat("_Blend", step);
+            step = Mathf.PingPong(Time.time, duration);
+            yield return null;
+        }
     }
 }
