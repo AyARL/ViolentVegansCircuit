@@ -26,6 +26,18 @@ public class Temp_LevelEndGUI : MonoBehaviour
             GUILayout.BeginVertical("Level Results:");
             GUILayout.Label(string.Format("Level {0}!", status.LevelWon ? "Completed" : "Failed"));
             GUILayout.Label(string.Format("{0}/{1} Chips Powered", status.ActivatedChips, status.MaxChips));
+            if (status.LevelWon && status.LevelIndex < Application.levelCount - 1)
+            {
+                if (GUILayout.Button("Next Level >>"))
+                {
+                    Application.LoadLevel(status.LevelIndex + 1);
+                }
+            }
+
+            if (GUILayout.Button("Replay Level"))
+            {
+                Application.LoadLevel(status.LevelIndex);
+            }
         }
     }
 
