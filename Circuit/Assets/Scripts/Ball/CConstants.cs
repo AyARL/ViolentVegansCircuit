@@ -11,9 +11,13 @@ namespace Circuit
         public const string CONTROL_MOUSE_X = "Mouse X";
         public const string CONTROL_MOUSE_Y = "Mouse Y";
 
+        public const int CONTROL_MOUSE_LEFT_BUTTON = 0;
+        public const int CONTROL_MOUSE_RIGHT_BUTTON = 1;
+
         // Various Default values
-        public const float DEFAULT_SPEED = 50.0f;
+        public const float DEFAULT_SPEED = 30.0f;
         public const float MAX_ROTATION_ANGLE = 15.0f;
+        public const float DEFAULT_HIGH_VELOCITY = 5.0f;
     }
 
     public class CTags
@@ -21,6 +25,7 @@ namespace Circuit
         // List of commonly used tags.
         public const string TAG_PLAYER = "Player";
         public const string TAG_TILE = "Tile";
+        public const string TAG_WALL = "Wall";
     }
 
     public class CErrorStrings

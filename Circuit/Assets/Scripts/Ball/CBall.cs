@@ -25,10 +25,13 @@ public class CBall : MonoBehaviour {
 
     private Vector3 m_v3InitialAccelerometerPosition;
 
+    private bool m_bCanMove = true;
+    public bool MovementStatus { get { return m_bCanMove; } private set { m_bCanMove = value; } }
+
     public EMovementType m_eMovementType;
     public EBallState m_eCurrentState;
 
-    public float m_fSpeed = CConstants.DEFAULT_SPEED;
+    private float m_fSpeed = CConstants.DEFAULT_SPEED;
 
 	/////////////////////////////////////////////////////////////////////////////
     /// Function:               Start
@@ -48,6 +51,9 @@ public class CBall : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
 	void Update () 
     {
+        // Check for touch input.
+        RunTouchLogic();
+
         // Detect device type and run locomotion logic.
         RunMovementLogic();
 
@@ -58,33 +64,61 @@ public class CBall : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               OnCollisionStay
     /////////////////////////////////////////////////////////////////////////////
-    void OnCollisionStay( Collision cCollision)
+    void OnCollisionStay( Collision cCollision )
     {
         // Check if the detected collision is a tile.
         if ( cCollision.gameObject.tag == CTags.TAG_TILE )
         {
             // Send a message to the tile containing the vector3 position.
-            cCollision.gameObject.SendMessageUpwards("OnReceiveMessage", transform.position,SendMessageOptions.DontRequireReceiver);
+            cCollision.gameObject.SendMessageUpwards( "OnReceiveMessage", transform.position, SendMessageOptions.DontRequireReceiver );
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               OnCollisionEnter
+    /////////////////////////////////////////////////////////////////////////////
+    void OnCollisionEnter( Collision cCollision )
+    {
+        // Error reporting.
+        string strFunctionName = "CBall::OnCollisionEnter()";
+
+        // Check if we hit a wall, and shake the camera if we did.
+        if ( cCollision.gameObject.tag == CTags.TAG_WALL )
+        {
+            // Get the main Camera.
+            GameObject goMainCamera = Camera.main.gameObject;
+
+            // Retrieve the camera controls so we can make the screen shake.
+            CCameraControl cCamControls = goMainCamera.GetComponent< CCameraControl >();
+            if ( null == cCamControls )
+            {
+                // We couldn't find the component, report error and return.
+                Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof( CCameraControl ) ) );
+                return;
+            }
+
+            // Run the effect.
+            cCamControls.CurrentEffectType = CCameraControl.EEffectType.EFFECT_SHAKE_CAMERA;
         }
     }
 
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               OnCollisionExit
     /////////////////////////////////////////////////////////////////////////////
-    void OnCollisionExit(Collision cCollision)
+    void OnCollisionExit( Collision cCollision )
     {
         // Check if the detected collision is a tile.
-        if (cCollision.gameObject.tag == CTags.TAG_TILE)
+        if ( cCollision.gameObject.tag == CTags.TAG_TILE )
         {
             // Send a message to the tile containing the vector3 position.
-            cCollision.gameObject.SendMessageUpwards("OnBallExit", transform.position, SendMessageOptions.DontRequireReceiver);
+            cCollision.gameObject.SendMessageUpwards( "OnBallExit", transform.position, SendMessageOptions.DontRequireReceiver );
         }
     }
 
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               RunMovementLogic
     /////////////////////////////////////////////////////////////////////////////
-    public void RunMovementLogic()
+    private void RunMovementLogic()
     {
         // Used when reporting errors.
         string strFunctionName = "CBall::RunMovementLogic()";
@@ -124,6 +158,21 @@ public class CBall : MonoBehaviour {
         Vector3 v3Direction = new Vector3( fHorizontalInput, 0, fVerticalInput );
         v3Direction.Normalize();
 
+        if ( v3Direction.magnitude < 0.5f )
+        {
+            return;
+        }
+
+        // Set the movement type accordingly depending on the can move flag.
+        if ( false == m_bCanMove )
+        {
+            m_eMovementType = EMovementType.MOVEMENT_NONE;
+        }
+        else
+        {
+            m_eMovementType = EMovementType.MOVEMENT_FORCE_IMPULSE;
+        }
+
         // Move the ball according to the movement type specified - This is only temporary 
         //  as we look into the different movement possibilities until we find one that suits us.
         switch ( m_eMovementType )
@@ -152,6 +201,13 @@ public class CBall : MonoBehaviour {
                 transform.Translate( v3Direction * m_fSpeed * Time.deltaTime, Space.World );
 	
                 break;
+
+                case EMovementType.MOVEMENT_NONE:
+
+                // Do nothing.
+
+                break;
+
             default:
 
                 // Unknown variable, report issue.
@@ -164,7 +220,7 @@ public class CBall : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               RunStatesLogic
     /////////////////////////////////////////////////////////////////////////////
-    public void RunStatesLogic()
+    private void RunStatesLogic()
     {
         // Used when reporting erros.
         string strFunctionName = "CBall::RunStatesLogic()";
@@ -177,6 +233,13 @@ public class CBall : MonoBehaviour {
             case EBallState.STATE_HAPPY:
                 break;
             case EBallState.STATE_NORMAL:
+
+                // Run the dizzy animation.
+                if ( transform.rigidbody.velocity.x > CConstants.DEFAULT_HIGH_VELOCITY || transform.rigidbody.velocity.z > CConstants.DEFAULT_HIGH_VELOCITY )
+                {
+                    m_eCurrentState = EBallState.STATE_DIZZY;
+                }
+
                 break;
             case EBallState.STATE_UNHAPPY:
                 break;
@@ -185,9 +248,73 @@ public class CBall : MonoBehaviour {
             default:
                 
                 // Unknown variable, report issue.
-                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE , strFunctionName, m_eCurrentState ) );
+                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE, strFunctionName, m_eCurrentState ) );
 
                 break;
         }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               RunTouchLogic
+    /////////////////////////////////////////////////////////////////////////////
+    private void RunTouchLogic()
+    {
+        // Used when reporting erros.
+        string strFunctionName = "CBall::RunTouchLogic()";
+
+        // According to device type, run touch logic.
+        switch ( SystemInfo.deviceType )
+        {
+            case DeviceType.Desktop:
+
+                // If the user clicked the left mouse button, we want the ball to stabilise.
+                if ( Input.GetMouseButtonDown( CConstants.CONTROL_MOUSE_LEFT_BUTTON ) )
+                {
+                    // Invert the can move value.
+                    m_bCanMove = !m_bCanMove;
+                }
+
+                break;
+            case DeviceType.Handheld:
+
+                // Check if there is a touch on the screen.
+                if ( Input.touches.Length <= 0 )
+                {
+                    // There are no touches, do nothing.
+                }
+                else
+                {
+                    // Loop through all registered touches and run touch logic.
+                    for ( int i = 0; i < Input.touchCount; ++i )
+                    {
+                        // Verify touch type and act correspondingly
+                        switch ( Input.GetTouch( i ).phase )
+                        {
+                            case TouchPhase.Began:
+                                
+                                // User is currently touching the screen, stop the ball.
+                                m_bCanMove = false;
+
+                                break;
+                            case TouchPhase.Ended:
+
+                                // User stopped touching, ball can move again.
+                                m_bCanMove = true;
+
+                                break;
+                            default:
+
+                                // Do nothing.
+
+                                break;
+                        }
+                    }
+                }
+
+                break;
+            default:
+                Debug.Log( string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE, strFunctionName, SystemInfo.deviceType ) );
+                break;
+        }          
     }
 }
