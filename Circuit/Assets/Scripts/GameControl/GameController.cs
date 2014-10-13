@@ -118,7 +118,7 @@ public class GameController : MonoBehaviour
         Debug.Log("Win!");
 
         SetLevelStatus(true);
-        Application.LoadLevelAdditive("LevelEndScreen");
+        Application.LoadLevel("LevelEndScreen");
         gameState = GameState.Game_ScoreDisplay;
         yield break;
     }
@@ -141,7 +141,7 @@ public class GameController : MonoBehaviour
         }
 
         SetLevelStatus(false);
-        Application.LoadLevelAdditive("LevelEndScreen");
+        Application.LoadLevel("LevelEndScreen");
         gameState = GameState.Game_ScoreDisplay;
     }
 

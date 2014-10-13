@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Pathfinding.Serialization.JsonFx;
 
 public static class Utility
 {
@@ -14,5 +15,21 @@ public static class Utility
             items[rand] = items[i];
             items[i] = temp;
         }
+    }
+
+    public static T ValidateJsonData<T>(string input)
+    {
+        T output;
+        try
+        {
+            output = JsonReader.Deserialize<T>(input);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log(ex.Message);
+            output = default(T);
+        }
+
+        return output;
     }
 }
