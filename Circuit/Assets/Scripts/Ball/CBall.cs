@@ -33,11 +33,29 @@ public class CBall : MonoBehaviour {
 
     private float m_fSpeed = CConstants.DEFAULT_SPEED;
 
+    private CAudioControl m_cAudioController;
+
 	/////////////////////////////////////////////////////////////////////////////
     /// Function:               Start
     /////////////////////////////////////////////////////////////////////////////
 	void Start () 
     {
+        string strFunctionName = "CBall::Start()";
+
+        // Find the audio controller game object and report any errors.
+        GameObject goAudioController = GameObject.FindGameObjectWithTag( CTags.TAG_AUDIO_CONTROLLER );
+        if ( null == goAudioController )
+        {
+            Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_NULL_OBJECT, strFunctionName, typeof( GameObject ) ) );
+        }
+
+        // Get the Audio controller component.
+        m_cAudioController = goAudioController.GetComponent< CAudioControl >();
+        if ( null == m_cAudioController )
+        {
+            Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof( CAudioControl ) ) );
+        }
+
         // Force the screen to remain in the Landscape left orientation.
         Screen.autorotateToPortrait = false;
         Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -237,6 +255,7 @@ public class CBall : MonoBehaviour {
                 // Run the dizzy animation.
                 if ( transform.rigidbody.velocity.x > CConstants.DEFAULT_HIGH_VELOCITY || transform.rigidbody.velocity.z > CConstants.DEFAULT_HIGH_VELOCITY )
                 {
+                    
                     m_eCurrentState = EBallState.STATE_DIZZY;
                 }
 
