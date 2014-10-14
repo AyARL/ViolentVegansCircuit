@@ -24,7 +24,7 @@ public class SaveLoadFacilitator : MonoBehaviour
             facilitator = this;
 
             playerPrefsSettings = Resources.Load<LoadingAndSavingSettings>("PlayerPrefsIdentifiers");
-            if(playerPrefsSettings == null)
+            if (playerPrefsSettings == null)
             {
                 Debug.LogException(new System.NullReferenceException("Could not load PlayerPrefsIdentifiers"));
             }
@@ -55,10 +55,10 @@ public class SaveLoadFacilitator : MonoBehaviour
     private bool LoadProfile()
     {
         string serialisedProfile = PlayerPrefs.GetString(playerPrefsSettings.SavedProfile);
-        if(serialisedProfile != "")
+        if (serialisedProfile != "")
         {
             playerProfile = Utility.ValidateJsonData<PlayerProfile>(serialisedProfile);
-            if(playerProfile != default(PlayerProfile))
+            if (playerProfile != default(PlayerProfile))
             {
                 return true;
             }
@@ -76,7 +76,7 @@ public class SaveLoadFacilitator : MonoBehaviour
 
     private void AddLastLevelCompletedToProfile(int levelIndex)
     {
-        if(playerProfile == null)
+        if (playerProfile == null)
         {
             CreateProfile();
         }
@@ -88,7 +88,7 @@ public class SaveLoadFacilitator : MonoBehaviour
     {
         levelIndex = -1;
 
-        if(playerProfile != null && playerProfile.LastLevelCompleted != -1)
+        if (playerProfile != null && playerProfile.LastLevelCompleted != -1)
         {
             levelIndex = playerProfile.LastLevelCompleted;
             return true;
@@ -105,30 +105,24 @@ public class SaveLoadFacilitator : MonoBehaviour
         }
         else
         {
-            try
+            LevelScore levelScore = playerProfile.LevelResults.FirstOrDefault(s => s.LevelIndex == result.LevelIndex);
+            if (levelScore != null)
             {
-                LevelScore levelScore = playerProfile.LevelResults.First(s => s.LevelIndex == result.LevelIndex);
-                if(levelScore != null)
+                if (levelScore.StarCount < result.StarsAwarded)
                 {
-                    if (levelScore.StarCount < result.StarsAwarded)
-                    {
-                        playerProfile.LevelResults[result.LevelIndex].StarCount = result.StarsAwarded;
-                        return;
-                    }
+                    levelScore.StarCount = result.StarsAwarded;
                 }
             }
-            catch(System.Exception ex)
+            else
             {
-                // no score for level - ignore
+                playerProfile.LevelResults.Add(new LevelScore() { LevelIndex = result.LevelIndex, StarCount = result.StarsAwarded });
             }
         }
-
-        playerProfile.LevelResults.Add(new LevelScore() { LevelIndex = result.LevelIndex, StarCount = result.StarsAwarded });
     }
 
     public bool GetProfileLevelResults(out List<LevelScore> output)
     {
-        if(playerProfile != null && playerProfile.LevelResults.Count > 0)
+        if (playerProfile != null && playerProfile.LevelResults.Count > 0)
         {
             output = playerProfile.LevelResults;
             return true;
