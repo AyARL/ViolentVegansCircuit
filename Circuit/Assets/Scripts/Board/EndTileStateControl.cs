@@ -4,12 +4,6 @@ using System.Collections;
 public class EndTileStateControl : MonoBehaviour
 {
     [SerializeField]
-    private Material inactiveMaterial = null;
-
-    [SerializeField]
-    private Material activeMaterial = null;
-
-    [SerializeField]
     private float duration = 1f;
 
     public bool Activated { get; private set; }

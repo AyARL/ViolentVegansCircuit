@@ -22,7 +22,7 @@ public class MainMenuGUI : MonoBehaviour
 
     public void StartNewGame()
     {
-        Application.LoadLevel(firstLevelIndex);
+        LoadingManager.LoadLevel(firstLevelIndex);
     }
 
     public void ContinueGame()

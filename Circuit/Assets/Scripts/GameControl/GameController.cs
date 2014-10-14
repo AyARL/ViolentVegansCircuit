@@ -7,7 +7,7 @@ public class GameController : MonoBehaviour
 {
     public bool shuffledDrop = false;   //not staying here
 
-    public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail, Game_ScoreDisplay }
+    public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail }
     private GameState gameState;
 
     [SerializeField]
@@ -118,8 +118,7 @@ public class GameController : MonoBehaviour
         Debug.Log("Win!");
 
         SetLevelStatus(true);
-        Application.LoadLevel("LevelEndScreen");
-        gameState = GameState.Game_ScoreDisplay;
+        LoadingManager.LoadLevel(2);
         yield break;
     }
 
@@ -141,16 +140,7 @@ public class GameController : MonoBehaviour
         }
 
         SetLevelStatus(false);
-        Application.LoadLevel("LevelEndScreen");
-        gameState = GameState.Game_ScoreDisplay;
-    }
-
-    private IEnumerator Game_ScoreDisplay()
-    {
-        while(true)
-        {
-            yield return null;
-        }
+        LoadingManager.LoadLevel(2);
     }
 
     private void EndPointActivated()

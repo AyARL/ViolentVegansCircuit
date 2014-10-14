@@ -34,7 +34,6 @@ public class LevelCompletedGUI : MonoBehaviour
             else
             {
                 failTitle.SetActive(true);
-
             }
         }
     }
@@ -63,6 +62,23 @@ public class LevelCompletedGUI : MonoBehaviour
         {
             return 2;
         }
+    }
+
+
+    // Button functions
+    public void ReplayLevel()
+    {
+
+    }
+
+    public void NextLevel()
+    {
+
+    }
+
+    public void MainMenu()
+    {
+
     }
 
 }
