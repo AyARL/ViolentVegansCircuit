@@ -4,8 +4,6 @@ using UnityEngine.Events;
 
 public class MainMenuGUI : MonoBehaviour
 {
-    [SerializeField]
-    private int firstLevelIndex = 0;
 
     private int lastLevelPlayed = -1;
 
@@ -22,7 +20,10 @@ public class MainMenuGUI : MonoBehaviour
 
     public void StartNewGame()
     {
-        LoadingManager.LoadLevel(firstLevelIndex);
+        if (LoadingManager.LevelLoadingSettings != null)
+        {
+            LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.FirstGameLevel);
+        }
     }
 
     public void ContinueGame()

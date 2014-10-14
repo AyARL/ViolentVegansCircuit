@@ -7,11 +7,19 @@ public class LoadingManager : MonoBehaviour
 
     private static LoadingManager managerSingleton = null;
 
+    private static LevelLoadingSettings levelLoadingSettings = null;
+    public static LevelLoadingSettings LevelLoadingSettings { get { return levelLoadingSettings; } }
+
     private void Awake()
     {
         if(managerSingleton == null)
         {
             DontDestroyOnLoad(gameObject);
+            levelLoadingSettings = Resources.Load<LevelLoadingSettings>("LevelLoadingSettings");
+            if(levelLoadingSettings == null)
+            {
+                Debug.LogException(new System.NullReferenceException("LevelLoadingSettings failed to load from Resources"));
+            }
         }
         else
         {
@@ -22,7 +30,7 @@ public class LoadingManager : MonoBehaviour
     public static void LoadLevel(int index)
     {
         levelToLoad = index;
-        Application.LoadLevel(1);
+        Application.LoadLevel(levelLoadingSettings.LoadingScreenIndex);
     }
 
     private IEnumerator OnLevelWasLoaded(int level)

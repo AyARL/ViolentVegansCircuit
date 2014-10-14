@@ -31,4 +31,17 @@ public static class ScriptableObjectUtility
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = asset;
     }
+
+    public static void CreateResource<T>() where T : ScriptableObject
+    {
+        T asset = ScriptableObject.CreateInstance<T>();
+        string path = "Assets/Resources";
+        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(path + "/New " + typeof(T).ToString() + ".asset");
+
+        AssetDatabase.CreateAsset(asset, assetPathAndName);
+
+        AssetDatabase.SaveAssets();
+        EditorUtility.FocusProjectWindow();
+        Selection.activeObject = asset;
+    }
 }

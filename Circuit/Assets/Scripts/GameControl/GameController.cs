@@ -118,7 +118,10 @@ public class GameController : MonoBehaviour
         Debug.Log("Win!");
 
         SetLevelStatus(true);
-        LoadingManager.LoadLevel(2);
+        if (LoadingManager.LevelLoadingSettings != null)
+        {
+            LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.LevelEndScreen);
+        }
         yield break;
     }
 
@@ -140,7 +143,10 @@ public class GameController : MonoBehaviour
         }
 
         SetLevelStatus(false);
-        LoadingManager.LoadLevel(2);
+        if (LoadingManager.LevelLoadingSettings != null)
+        {
+            LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.LevelEndScreen);
+        }
     }
 
     private void EndPointActivated()

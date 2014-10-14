@@ -4,7 +4,7 @@ using System.Collections;
 
 public static class CustomMenuItems
 {
-    [MenuItem("Circuit/Board/Create Board in Scene")]
+    [MenuItem("Arc Flash/Board/Create Board in Scene")]
     public static void CreateBoard()
     {
         GameObject board = new GameObject("CircuitBoard", typeof(CircuitBoard));
@@ -12,9 +12,15 @@ public static class CustomMenuItems
         board.AddComponent<BoardFlowControl>();
     }
 
-    [MenuItem("Circuit/Board/Create Tile Prefab Resource")]
+    [MenuItem("Arc Flash/Board/Create Tile Prefab Resource")]
     public static void CreateTilePrefabResource()
     {
         ScriptableObjectUtility.CreateAsset<CircuitTilesSO>();
+    }
+
+    [MenuItem("Arc Flash/Settings/Level Indices")]
+    public static void CreateLevelSettingsSO()
+    {
+        ScriptableObjectUtility.CreateResource<LevelLoadingSettings>();
     }
 }
