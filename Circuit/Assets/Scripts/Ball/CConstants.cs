@@ -26,6 +26,7 @@ namespace Circuit
         public const string TAG_PLAYER = "Player";
         public const string TAG_TILE = "Tile";
         public const string TAG_WALL = "Wall";
+        public const string TAG_AUDIO_CONTROLLER = "AudioController";
     }
 
     public class CErrorStrings
@@ -35,6 +36,7 @@ namespace Circuit
         public const string ERROR_UNRECOGNIZED_VALUE = "Provided enum value is unrecognized";
         public const string ERROR_NULL_OBJECT = "Failed to find object";
         public const string ERROR_MISSING_COMPONENT = "Missing component";
+        public const string ERROR_UNRECOGNIZED_NAME = "Provided name is not handled by current function.";
     }
 
     public class CAnimatorConstants
@@ -48,5 +50,14 @@ namespace Circuit
 
         // Animator parameters
         public const string ANIMATOR_PARAMETER_BALL_STATE = "iState";
+    }
+
+    public class CAudio
+    {
+        // Default audio names.
+        public const string AUDIO_MUSIC = "BackGroundMusic";
+        public const string AUDIO_EFFECT_BALL_HIT = "BallHit";
+        public const string AUDIO_EFFECT_ELECTRIC_JOLT = "Jolt";
+        public const string AUDIO_EFFECT_CHIP_POWER = "ChipPowerUp";
     }
 }
