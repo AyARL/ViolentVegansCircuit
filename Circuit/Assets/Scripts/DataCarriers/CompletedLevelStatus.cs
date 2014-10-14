@@ -8,4 +8,5 @@ public class CompletedLevelStatus
     public bool LevelWon { get; set; }
     public int ActivatedChips { get; set; }
     public int MaxChips { get; set; }
+    public int StarsAwarded { get; set; }
 }

@@ -15,6 +15,7 @@ public class LoadingManager : MonoBehaviour
         if(managerSingleton == null)
         {
             DontDestroyOnLoad(gameObject);
+            managerSingleton = this;
             levelLoadingSettings = Resources.Load<LevelLoadingSettings>("LevelLoadingSettings");
             if(levelLoadingSettings == null)
             {

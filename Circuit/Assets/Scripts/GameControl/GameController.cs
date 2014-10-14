@@ -175,14 +175,38 @@ public class GameController : MonoBehaviour
 
     private void SetLevelStatus(bool levelWon)
     {
-        string levelStatus = JsonWriter.Serialize(new CompletedLevelStatus()
+        int activatedChips = endPointsTotal - numberOfInactiveEndPoints;
+        int awardedStars = CalculateAwardedStars(activatedChips);
+
+        CompletedLevelStatus status = new CompletedLevelStatus()
         {
             LevelIndex = Application.loadedLevel,
             LevelWon = levelWon,
-            ActivatedChips = endPointsTotal - numberOfInactiveEndPoints,
-            MaxChips = endPointsTotal
-        });
+            ActivatedChips = activatedChips,
+            MaxChips = endPointsTotal,
+            StarsAwarded = awardedStars
+        };
 
-        PlayerPrefs.SetString("LevelStatus", levelStatus);
+        SaveLoadFacilitator.Facilitator.SaveLevelResults(status);
+    }
+
+    private int CalculateAwardedStars(int activatedChips)
+    {
+        if(activatedChips == 0)
+        {
+            return 0;
+        }
+        else if (activatedChips == endPointsTotal)
+        {
+            return 3;
+        }
+        else if (activatedChips == 1)
+        {
+            return 1;
+        }
+        else
+        {
+            return 2;
+        }
     }
 }

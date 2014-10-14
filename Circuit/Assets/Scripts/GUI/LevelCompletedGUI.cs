@@ -20,15 +20,13 @@ public class LevelCompletedGUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        string statusString = PlayerPrefs.GetString("LevelStatus");
-        status = Utility.ValidateJsonData<CompletedLevelStatus>(statusString);
-        if (status != default(CompletedLevelStatus))
+        if (SaveLoadFacilitator.Facilitator.LoadLevelResults(out status))
         {
             if (status.LevelWon)
             {
                 winTitle.SetActive(true);
                 StarAnimations = starContainer.GetComponentsInChildren<Animation>();
-                awardedStars = CalculateAwardedStars();
+                awardedStars = status.StarsAwarded;
                 StartCoroutine(DelayStarDrop(0.5f, 0.2f));
             }
             else
@@ -48,37 +46,24 @@ public class LevelCompletedGUI : MonoBehaviour
         }
     }
 
-    private int CalculateAwardedStars()
-    {
-        if (status.ActivatedChips == status.MaxChips)
-        {
-            return 3;
-        }
-        else if (status.ActivatedChips == 1)
-        {
-            return 1;
-        }
-        else
-        {
-            return 2;
-        }
-    }
-
 
     // Button functions
     public void ReplayLevel()
     {
-
+        LoadingManager.LoadLevel(status.LevelIndex);
     }
 
     public void NextLevel()
     {
-
+        if(status.LevelIndex < Application.levelCount - 1)
+        {
+            LoadingManager.LoadLevel(status.LevelIndex + 1);
+        }
     }
 
     public void MainMenu()
     {
-
+        LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.MainMenuIndex);
     }
 
 }

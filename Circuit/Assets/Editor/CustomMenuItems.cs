@@ -23,4 +23,10 @@ public static class CustomMenuItems
     {
         ScriptableObjectUtility.CreateResource<LevelLoadingSettings>();
     }
+
+    [MenuItem("Arc Flash/Settings/PlayerPrefsIdentifiers")]
+    public static void CreatePlayerPrefSettings()
+    {
+        ScriptableObjectUtility.CreateResource<LoadingAndSavingSettings>();
+    }
 }
