@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Events;
 
 public class CircuitTileFlow : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class CircuitTileFlow : MonoBehaviour
     private GameObject ballTether = null;
 
     public bool BallAttached { get; private set; }
+    public UnityAction OnBallAttached { get; set; }
+    public UnityAction OnBallDetached { get; set; }
 
     private void Reset()
     {
@@ -109,6 +112,10 @@ public class CircuitTileFlow : MonoBehaviour
         {
             ballTether = Instantiate(tether, startPos, Quaternion.identity) as GameObject;
             BallAttached = true;
+            if (OnBallAttached != null)
+            {
+                OnBallAttached();
+            }
         }
 
         if (ballTether != null)
@@ -130,6 +137,10 @@ public class CircuitTileFlow : MonoBehaviour
             Destroy(ballTether);
             ballTether = null;
             BallAttached = false;
+            if (OnBallDetached != null)
+            {
+                OnBallDetached();
+            }
         }
     }
 }
