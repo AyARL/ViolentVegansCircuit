@@ -16,8 +16,6 @@ public class SaveLoadFacilitator : MonoBehaviour
 
     void Awake()
     {
-        //PlayerPrefs.DeleteAll(); // Uncomment this to remove all saved data on start
-
         if (facilitator == null)
         {
             DontDestroyOnLoad(gameObject);
@@ -158,5 +156,11 @@ public class SaveLoadFacilitator : MonoBehaviour
             result = null;
             return false;
         }
+    }
+
+    public void ResetProfile()
+    {
+        PlayerPrefs.DeleteAll();
+        playerProfile = null;
     }
 }

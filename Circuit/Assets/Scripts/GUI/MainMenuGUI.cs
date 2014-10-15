@@ -67,7 +67,7 @@ public class MainMenuGUI : MonoBehaviour
 
     public void Settings()
     {
-
+        SaveLoadFacilitator.Facilitator.ResetProfile();
     }
 
     public void Quit()
