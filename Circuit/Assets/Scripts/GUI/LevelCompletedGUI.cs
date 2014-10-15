@@ -34,10 +34,16 @@ public class LevelCompletedGUI : MonoBehaviour
             activeChipsCounter.text = status.ActivatedChips.ToString();
             totalChipsCounter.text = status.MaxChips.ToString();
 
+            StarAnimations = starContainer.GetComponentsInChildren<Animation>();
+            foreach (Animation anim in StarAnimations)
+            {
+                anim.gameObject.SetActive(false);
+            }
+
             if (status.LevelWon)
             {
                 winTitle.SetActive(true);
-                StarAnimations = starContainer.GetComponentsInChildren<Animation>();
+                
                 awardedStars = status.StarsAwarded;
                 StartCoroutine(DelayStarDrop(0.5f, 0.2f));
 
@@ -63,6 +69,7 @@ public class LevelCompletedGUI : MonoBehaviour
         yield return new WaitForSeconds(time);
         for (int i = 0; i < awardedStars; i++)
         {
+            StarAnimations[i].gameObject.SetActive(true);
             StarAnimations[i].Play();
             yield return new WaitForSeconds(interval);
         }
