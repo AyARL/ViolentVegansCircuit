@@ -21,27 +21,13 @@ public class WallEffects : MonoBehaviour
             wallPushEffect.transform.position = collision.contacts[0].point;
             foreach (ParticleSystem ps in particleSystems)
             {
-                //ps.loop = true;
                 ps.Play();
+                Handheld.Vibrate();
             }
         }
     }
 
-    //private void OnCollisionStay(Collision collision)
-    //{
-    //    if (collision.transform.tag == "Player")
-    //    {
-    //        wallPushEffect.transform.position = collision.contacts[0].point;
 
-    //        //if(!particleSystems.Any(p => p.isPlaying))
-    //        //{
-    //        //    foreach (ParticleSystem ps in particleSystems)
-    //        //    {
-    //        //        ps.Play();
-    //        //    }
-    //        //}
-    //    }
-    //}
 
     private void OnCollisionExit(Collision collision)
     {

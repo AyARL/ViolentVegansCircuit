@@ -112,6 +112,8 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Win()
     {
+        Handheld.Vibrate();
+
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
@@ -127,6 +129,8 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Fail()
     {
+        Handheld.Vibrate();
+
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
