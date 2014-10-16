@@ -72,6 +72,11 @@ public class SaveLoadFacilitator : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public bool HasSavedProgress()
+    {
+        return playerProfile != null;
+    }
+
     private void AddLastLevelCompletedToProfile(int levelIndex)
     {
         if (playerProfile == null)

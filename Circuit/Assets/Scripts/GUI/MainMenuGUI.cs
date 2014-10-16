@@ -6,14 +6,11 @@ using System.Linq;
 
 public class MainMenuGUI : MonoBehaviour
 {
-
-    private int lastLevelPlayed = -1;
-
     public UnityAction OnContinueAvailable { get; set; }
 
     private void Start()
     {
-        if (SaveLoadFacilitator.Facilitator.GetLastLevelCompleted(out lastLevelPlayed))
+        if (SaveLoadFacilitator.Facilitator.HasSavedProgress())
         {
             OnContinueAvailable();
         }
