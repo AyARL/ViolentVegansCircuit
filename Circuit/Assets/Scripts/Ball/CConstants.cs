@@ -37,6 +37,7 @@ namespace Circuit
         public const string ERROR_NULL_OBJECT = "Failed to find object";
         public const string ERROR_MISSING_COMPONENT = "Missing component";
         public const string ERROR_UNRECOGNIZED_NAME = "Provided name is not handled by current function.";
+        public const string ERROR_UNMATCHED_AUDIO_CLIP = "Unable to match provided audio file to available patterns.";
     }
 
     public class CAnimatorConstants
@@ -54,10 +55,21 @@ namespace Circuit
 
     public class CAudio
     {
-        // Default audio names.
-        public const string AUDIO_MUSIC = "BackGroundMusic";
-        public const string AUDIO_EFFECT_BALL_HIT = "BallHit";
-        public const string AUDIO_EFFECT_ELECTRIC_JOLT = "Jolt";
-        public const string AUDIO_EFFECT_CHIP_POWER = "ChipPowerUp";
+        // Default audio path
+        public const string PATH_AUDIO = "./Assets/Audio";
+
+        // Default regex patterns.
+        public const string AUDIO_MUSIC = "Music";
+        public const string AUDIO_EFFECT_GAMEOVER = "GameOver";
+        public const string AUDIO_EFFECT_MENU_SELECT = "Menu_Select";
+        public const string AUDIO_EFFECT_ELECTRIC_LOOP = "Electricity_Loop";
+        public const string AUDIO_EFFECT_BALL_HIT = "Ball_Hit";
+        public const string AUDIO_EFFECT_BALL_WALLHIT = "Ball_WallHit";
+        public const string AUDIO_EFFECT_BALL_ROLLING = "Ball_Rolling";
+        public const string AUDIO_EFFECT_ELECTRIC_JOLT = "Electricity_Jolt";
+        public const string AUDIO_EFFECT_CHIP_POWER = "PowerUp";
+
+        // Valid file extensions.
+        public const string FILE_TYPE_MP3 = ".mp3";
     }
 }
