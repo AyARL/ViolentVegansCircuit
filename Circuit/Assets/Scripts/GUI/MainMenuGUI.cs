@@ -8,6 +8,9 @@ public class MainMenuGUI : MonoBehaviour
 {
     public UnityAction OnContinueAvailable { get; set; }
 
+    [SerializeField]
+    private GameObject levelSelectScreen = null;
+
     private void Start()
     {
         if (SaveLoadFacilitator.Facilitator.HasSavedProgress())
@@ -52,14 +55,8 @@ public class MainMenuGUI : MonoBehaviour
 
     public void SelectLevel()
     {
-        List<LevelScore> levelScores;
-        if (SaveLoadFacilitator.Facilitator.GetProfileLevelResults(out levelScores))
-        {
-            foreach (LevelScore score in levelScores)
-            {
-                Debug.Log(string.Format("Level: {0} Stars: {1}", score.LevelIndex, score.StarCount));
-            }
-        }
+        gameObject.SetActive(false);
+        levelSelectScreen.SetActive(true);
     }
 
     public void Settings()
