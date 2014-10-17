@@ -15,8 +15,6 @@ public class CAudioControl : MonoBehaviour {
 
     private static List< GameObject > m_liActiveAudioObjects = new List< GameObject >();
 
-    private static Dictionary< string, int > m_dKillSignals = new Dictionary< string, int >();
-
     private static Dictionary< string, List< AudioClip > > m_dAudioClipContainer = new Dictionary< string, List< AudioClip > >();
 
     private List< string > m_liValidExtensions = new List< string > 
@@ -309,11 +307,8 @@ public class CAudioControl : MonoBehaviour {
     static IEnumerator FadeIn( AudioSource asSource, float fVol )
     {
         // Slowly raise the volume.
-        while ( asSource.volume < fVol )
+        while ( asSource != null && asSource.volume < fVol )
         {
-            if ( asSource == null )
-                break;
-
             asSource.volume += CAudio.AUDIO_FADE_VARIABLE * Time.deltaTime;
             yield return null;
         }
@@ -327,15 +322,20 @@ public class CAudioControl : MonoBehaviour {
     static IEnumerator FadeOut( AudioSource asSource )
     {
         // Reduce volume to create a fade out effect.
-        while ( asSource.volume > 0 )
+        while ( asSource != null && asSource.volume > 0 )
         {
-            if ( asSource == null )
-                break;
-
             asSource.volume -= CAudio.AUDIO_FADE_VARIABLE * Time.deltaTime;
             yield return null;
         }
 
         yield return null;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               ClearContainers
+    /////////////////////////////////////////////////////////////////////////////
+    public static void ClearContainers()
+    {
+        m_liActiveAudioObjects.Clear();
     }
 }

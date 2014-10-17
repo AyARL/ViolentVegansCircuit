@@ -123,6 +123,8 @@ public class GameController : MonoBehaviour
         CAudioControl.StopSound( m_iMusicID );
         m_iMusicID = 0;
 
+        CAudioControl.ClearContainers();
+
         Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
@@ -143,6 +145,8 @@ public class GameController : MonoBehaviour
         // Stop the music.
         CAudioControl.StopSound( m_iMusicID );
         m_iMusicID = 0;
+
+        CAudioControl.ClearContainers();
 
         Handheld.Vibrate();
 
