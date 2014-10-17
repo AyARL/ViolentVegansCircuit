@@ -7,13 +7,19 @@ using System.IO;
 using System;
 using Circuit;
 
+[ RequireComponent( typeof( CStaticCoroutine ) ) ]
 public class CAudioControl : MonoBehaviour {
 
-    public static Dictionary< string, List< AudioClip > > m_dAudioClipContainer = new Dictionary< string,List< AudioClip > >();
+    private static List< GameObject > m_liActiveAudioObjects = new List< GameObject >();
+
+    private static Dictionary< string, int > m_dKillSignals = new Dictionary< string, int >();
+
+    private static Dictionary< string, List< AudioClip > > m_dAudioClipContainer = new Dictionary< string, List< AudioClip > >();
 
     private List< string > m_liValidExtensions = new List< string > 
     { 
-        CAudio.FILE_TYPE_MP3
+        CAudio.FILE_TYPE_MP3,
+        CAudio.FILE_TYPE_WAV
     };
 
     private List< string > m_liRegexPatterns = new List< string > 
@@ -113,7 +119,7 @@ public class CAudioControl : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               CreateAndPlayAudio
     /////////////////////////////////////////////////////////////////////////////
-    public static void CreateAndPlayAudio( string strAudioName, bool bLoop, bool bPlayOnAwake, float fVolume )
+    public static int CreateAndPlayAudio( string strAudioName, bool bLoop, bool bPlayOnAwake, bool bFadeIn, float fVolume )
     {
         // This function will create a GameObject using the provided parameters and will add an
         //  AudioSource component to it which we will configure to suit our needs. The GameObject
@@ -135,24 +141,54 @@ public class CAudioControl : MonoBehaviour {
 
         GameObject goAudioClipObject = new GameObject( strAudioName );
 
+        goAudioClipObject.tag = CTags.TAG_AUDIO;
+
         // Set the position of the object.
         goAudioClipObject.transform.position = Vector3.zero;
 
         // Add the Audio Source component
         goAudioClipObject.AddComponent< AudioSource >();
 
+        // Add the Clip Info object.
+        goAudioClipObject.AddComponent< CAudioClip >();
+
         // Retrieve the Audio source component. We will use this reference to set up values, etc.
         AudioSource asSource = goAudioClipObject.GetComponent< AudioSource >();
+
+        // Retrieve the Clip information object.
+        CAudioClip cClipInfo = goAudioClipObject.GetComponent< CAudioClip >();
 
         // Set up the audio source.
         asSource.playOnAwake = bPlayOnAwake;
         asSource.loop = bLoop;
         asSource.clip = aClip;
-        asSource.volume = fVolume;
+        asSource.volume = 0f;
+
+        // Check if we want to fade in the sound.
+        if ( true == bFadeIn )
+        {
+             CStaticCoroutine.DoCoroutine( FadeIn( asSource, fVolume ) );
+        }
+        else
+        { 
+            asSource.volume = fVolume;
+        }
 
         // Play the clip and destroy the game object once we're done with it.
         asSource.Play();
-        Destroy( goAudioClipObject, aClip.length );
+
+        if ( false == bLoop )
+        {
+            Destroy( goAudioClipObject, aClip.length );
+        }
+        else
+        {
+            m_liActiveAudioObjects.Add( goAudioClipObject );
+            return cClipInfo.ClipId;
+        }
+
+        // Return an invalid id.
+        return -1;
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -190,5 +226,102 @@ public class CAudioControl : MonoBehaviour {
             bIsValidAudioType = true;
 
         return bIsValidAudioType;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               SoundIsPlaying
+    /////////////////////////////////////////////////////////////////////////////
+    public static List< GameObject > SoundIsPlaying( string strAudioName )
+    {
+        // Check if there is a spawned object playing the provided audio.
+        GameObject[] rggoAudioObjects = GameObject.FindGameObjectsWithTag( CTags.TAG_AUDIO );
+
+        // Return all game objects of interest.
+        List< GameObject > liObjectsOfInterest = rggoAudioObjects.Where( x => x.name == strAudioName ).ToList();
+        
+        return liObjectsOfInterest;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               StopSound
+    /////////////////////////////////////////////////////////////////////////////
+    public static void StopSound( int iSourceID, bool bFadeOut = true )
+    {
+        // Retrieve the gameobject with the correct clip id.
+        GameObject goAudioObject = m_liActiveAudioObjects.Where( x => x.GetComponent< CAudioClip >().ClipId == iSourceID ).First();
+
+        if ( goAudioObject == null )
+            return;
+
+        // Retrieve the clip information object.
+        CAudioClip cClipInfo = goAudioObject.GetComponent< CAudioClip >();
+
+        // Check if it's marked for deletion.
+        if ( true == cClipInfo.MarkedForDestruction )
+        {
+            // Take out the object and try stopping the sound again.
+            m_liActiveAudioObjects.Remove( goAudioObject );
+
+            StopSound( iSourceID, bFadeOut );
+
+            // No point in going forward, we can exit the function.
+            return;
+        }
+        else
+        {
+            // Take out the object and try stopping the sound again.
+            m_liActiveAudioObjects.Remove( goAudioObject );
+
+            // Ensure we don't reprocess this clip.
+            cClipInfo.MarkedForDestruction = true;
+        }
+        
+        // Retrieve the audio source for the fadeout functionality.
+        AudioSource asSource = goAudioObject.GetComponent< AudioSource >();
+
+        if ( true == bFadeOut )
+        { 
+            CStaticCoroutine.DoCoroutine( FadeOut( asSource ) );
+        }
+        else
+        {
+            asSource.volume = 0;
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               FadeIn
+    /////////////////////////////////////////////////////////////////////////////
+    static IEnumerator FadeIn( AudioSource asSource, float fVol )
+    {
+        // Slowly raise the volume.
+        while ( asSource.volume < fVol )
+        {
+            if ( asSource == null )
+                break;
+
+            asSource.volume += CAudio.AUDIO_FADE_VARIABLE * Time.deltaTime;
+            yield return null;
+        }
+
+        yield return null;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               FadeOut
+    /////////////////////////////////////////////////////////////////////////////
+    static IEnumerator FadeOut( AudioSource asSource )
+    {
+        // Reduce volume to create a fade out effect.
+        while ( asSource.volume > 0 )
+        {
+            if ( asSource == null )
+                break;
+
+            asSource.volume -= CAudio.AUDIO_FADE_VARIABLE * Time.deltaTime;
+            yield return null;
+        }
+
+        yield return null;
     }
 }

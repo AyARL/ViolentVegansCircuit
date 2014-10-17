@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Pathfinding.Serialization.JsonFx;
+using Circuit;
 
 public class GameController : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class GameController : MonoBehaviour
 
     private int endPointsTotal = -1;
     private int numberOfInactiveEndPoints = -1;
+
+    private int m_iMusicID;
 
     private void Start()
     {
@@ -56,6 +59,10 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Setup()
     {
+        // Start up the music.
+        if ( m_iMusicID <= 0 )
+            m_iMusicID = CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_MUSIC, true, true, true, 0.3f );
+
         flowControl.OnImpulseRemoved += ImpulseLost;
         flowControl.OnEndPointActivated += EndPointActivated;
 
@@ -112,6 +119,10 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Win()
     {
+        // Stop the music.
+        CAudioControl.StopSound( m_iMusicID );
+        m_iMusicID = 0;
+
         Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
@@ -129,6 +140,10 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Fail()
     {
+        // Stop the music.
+        CAudioControl.StopSound( m_iMusicID );
+        m_iMusicID = 0;
+
         Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
