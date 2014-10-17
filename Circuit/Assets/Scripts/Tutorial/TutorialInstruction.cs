@@ -7,7 +7,7 @@ public class TutorialInstruction : ScriptableObject
     private float timeScale = 0;
     public float TimeScale { get { return timeScale; } }
 
-    [SerializeField]
+    [SerializeField][Multiline]
     private string instructionText = null;
     public string InstructionText { get { return instructionText; } }
 
