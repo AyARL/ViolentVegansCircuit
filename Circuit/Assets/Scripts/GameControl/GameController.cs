@@ -7,26 +7,26 @@ using Circuit;
 public class GameController : MonoBehaviour
 {
     public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail }
-    private GameState gameState;
+    protected GameState gameState;
 
     [SerializeField]
-    private GameObject board = null;
+    protected GameObject board = null;
 
-    private CircuitBoard circuitBoard = null;
-    private BoardFlowControl flowControl = null;
+    protected CircuitBoard circuitBoard = null;
+    protected BoardFlowControl flowControl = null;
 
     [SerializeField]
-    private GameObject Player = null;
+    protected GameObject Player = null;
     [SerializeField]
-    private GameObject PlayerFace = null;
+    protected GameObject PlayerFace = null;
 
-    private bool WinConditionMet = false;
-    private bool FailConditionMet = false;
+    protected bool WinConditionMet = false;
+    protected bool FailConditionMet = false;
 
-    private int endPointsTotal = -1;
-    private int numberOfInactiveEndPoints = -1;
+    protected int endPointsTotal = -1;
+    protected int numberOfInactiveEndPoints = -1;
 
-    private int m_iMusicID;
+    protected int m_iMusicID;
 
     private void Start()
     {
@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour
     }
 
     // There isn't that much game logic, so a simple state machine should be enough
-    private IEnumerator StateMachine()
+    protected IEnumerator StateMachine()
     {
         while (true)
         {
@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private IEnumerator Game_Start()
+    protected IEnumerator Game_Start()
     {
         circuitBoard = board.GetComponent<CircuitBoard>();
         flowControl = board.GetComponent<BoardFlowControl>();
@@ -56,7 +56,7 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    private IEnumerator Game_Setup()
+    protected IEnumerator Game_Setup()
     {
         // Start up the music.
         if (m_iMusicID <= 0)
@@ -90,7 +90,7 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    private IEnumerator Game_Play()
+    protected IEnumerator Game_Play()
     {
         // Spawn Impulse
         flowControl.SpawnImpulse();
@@ -114,7 +114,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private IEnumerator Game_Win()
+    protected IEnumerator Game_Win()
     {
         // Stop the music.
         CAudioControl.StopSound(m_iMusicID);
@@ -130,6 +130,7 @@ public class GameController : MonoBehaviour
         Debug.Log("Win!");
 
         SetLevelStatus(true);
+        yield return new WaitForSeconds(1f);
         if (LoadingManager.LevelLoadingSettings != null)
         {
             LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.LevelEndScreen);
@@ -137,7 +138,7 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    private IEnumerator Game_Fail()
+    protected IEnumerator Game_Fail()
     {
         // Stop the music.
         CAudioControl.StopSound(m_iMusicID);
@@ -166,7 +167,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void EndPointActivated()
+    protected void EndPointActivated()
     {
         numberOfInactiveEndPoints -= 1;
         if (numberOfInactiveEndPoints == 0)
@@ -175,7 +176,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void ImpulseLost(int impulsesLeft)
+    protected void ImpulseLost(int impulsesLeft)
     {
         if (impulsesLeft == 0)
         {
@@ -190,7 +191,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void SetLevelStatus(bool levelWon)
+    protected void SetLevelStatus(bool levelWon)
     {
         int activatedChips = endPointsTotal - numberOfInactiveEndPoints;
         int awardedStars = CalculateAwardedStars(activatedChips);
@@ -207,7 +208,7 @@ public class GameController : MonoBehaviour
         SaveLoadFacilitator.Facilitator.SaveLevelResults(status);
     }
 
-    private int CalculateAwardedStars(int activatedChips)
+    protected int CalculateAwardedStars(int activatedChips)
     {
         if (activatedChips == 0)
         {
