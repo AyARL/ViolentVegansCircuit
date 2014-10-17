@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void Game_Start()
+    private IEnumerator Game_Start()
     {
         circuitBoard = board.GetComponent<CircuitBoard>();
         flowControl = board.GetComponent<BoardFlowControl>();
@@ -53,6 +53,7 @@ public class GameController : MonoBehaviour
         FailConditionMet = false;
 
         gameState = GameState.Game_Setup;
+        yield break;
     }
 
     private IEnumerator Game_Setup()
