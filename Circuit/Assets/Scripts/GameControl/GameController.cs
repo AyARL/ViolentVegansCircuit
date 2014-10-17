@@ -6,8 +6,6 @@ using Circuit;
 
 public class GameController : MonoBehaviour
 {
-    public bool shuffledDrop = false;   //not staying here
-
     public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail }
     private GameState gameState;
 
@@ -71,10 +69,8 @@ public class GameController : MonoBehaviour
 
         // Spawn tiles
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
-        if (shuffledDrop)
-        {
-            Utility.Shuffle(tileOrderIndices);
-        }
+        Utility.Shuffle(tileOrderIndices);
+
 
         foreach (int i in tileOrderIndices)
         {
@@ -154,10 +150,7 @@ public class GameController : MonoBehaviour
         flowControl.OnEndPointActivated -= EndPointActivated;
 
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
-        if (shuffledDrop)
-        {
-            Utility.Shuffle(tileOrderIndices);
-        }
+        Utility.Shuffle(tileOrderIndices);
 
         foreach (int i in tileOrderIndices)
         {
