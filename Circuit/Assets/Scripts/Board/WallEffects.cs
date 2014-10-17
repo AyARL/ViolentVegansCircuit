@@ -22,7 +22,7 @@ public class WallEffects : MonoBehaviour
             foreach (ParticleSystem ps in particleSystems)
             {
                 ps.Play();
-                Handheld.Vibrate();
+                VibrationManager.Vibrate(20);
             }
         }
     }

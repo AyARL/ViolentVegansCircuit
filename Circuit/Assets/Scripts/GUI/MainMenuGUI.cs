@@ -62,6 +62,7 @@ public class MainMenuGUI : MonoBehaviour
     public void Settings()
     {
         SaveLoadFacilitator.Facilitator.ResetProfile();
+        LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.MainMenuIndex);
     }
 
     public void Quit()

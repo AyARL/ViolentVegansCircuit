@@ -226,7 +226,7 @@ public class BoardFlowControl : MonoBehaviour
             {
                 if (tileFlow.BallAttached)
                 {
-                    Handheld.Vibrate();
+                    VibrationManager.Vibrate(300);
                     impulse.PutOnSegment(inMarker, inMarker.NextMarker);
                     impulse.RunImpulse();
                 }

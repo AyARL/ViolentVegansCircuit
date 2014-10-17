@@ -20,7 +20,7 @@ public class CircuitBoard : MonoBehaviour
     public void Initialise()
     {
         for (int i = 0; i < width * height; i++)
-        {
+        { 
             float x = (i % width) * tileSize;
             float z = (i / width) * tileSize;
 
