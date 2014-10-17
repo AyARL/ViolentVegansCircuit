@@ -11,10 +11,13 @@ public class CircuitBoard : MonoBehaviour
 
     [SerializeField] [HideInInspector]
     private int width = 7;
+#pragma warning disable 414
+// Disabled the CS0414 warrining (variables not used) as it complains with builds once the editor part is taken out
     [SerializeField] [HideInInspector]
     private int height = 5;
 
     float tileSize = 10f;
+#pragma warning restore 414
 
 #if UNITY_EDITOR
     public void Initialise()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Events;
+using Circuit;
 
 public class CircuitTileFlow : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class CircuitTileFlow : MonoBehaviour
     public ExitType TypeOfExit { get; private set; }
 
     private GameObject ballTether = null;
+
+    private int m_iAudioID;
 
     public bool BallAttached { get; private set; }
     public UnityAction OnBallAttached { get; set; }
@@ -90,6 +93,10 @@ public class CircuitTileFlow : MonoBehaviour
     {
         if (TypeOfExit == ExitType.Exit_Connector || TypeOfEntry == EntryType.Entry_Connector)
         {
+            // Set the audioID variable to keep track of the current ball tether and play the effect.
+            if ( m_iAudioID <= 0 )
+                m_iAudioID = CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_ELECTRIC_LOOP, true, true, false, 0.2f );
+
             UpdateBallTether(gameObject.transform.position, ballPos);
         }
         
@@ -134,6 +141,8 @@ public class CircuitTileFlow : MonoBehaviour
     {
         if (ballTether != null)
         {
+            CAudioControl.StopSound( m_iAudioID, false );
+            m_iAudioID = 0;
             Destroy(ballTether);
             ballTether = null;
             BallAttached = false;

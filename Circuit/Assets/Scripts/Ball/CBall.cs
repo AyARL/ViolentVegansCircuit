@@ -25,6 +25,8 @@ public class CBall : MonoBehaviour {
 
     private Vector3 m_v3InitialAccelerometerPosition;
 
+    private int m_iAudioID = 0;
+
     private bool m_bCanMove = true;
     public bool MovementStatus { get { return m_bCanMove; } private set { m_bCanMove = value; } }
 
@@ -117,6 +119,18 @@ public class CBall : MonoBehaviour {
 
             // Run the effect.
             cCamControls.CurrentEffectType = CCameraControl.EEffectType.EFFECT_SHAKE_CAMERA;
+
+            // Play the wall hit sound.
+            if ( true == m_cAudioController.AudioFilesLoaded )
+            {
+                CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.8f );
+            }
+            else
+            {
+                // We couldn't find the component, report error and return.
+                Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_AUDIO_FILES_NOT_LOADED, strFunctionName, typeof( CAudioControl ) ) );
+                return;
+            }
         }
     }
 
@@ -140,6 +154,23 @@ public class CBall : MonoBehaviour {
     {
         // Used when reporting errors.
         string strFunctionName = "CBall::RunMovementLogic()";
+
+        // If the ball is moving, play the rolling sound, else make sure it's not playing.
+        if ( Mathf.Abs( rigidbody.velocity.x ) > CAudio.MIN_VELOCITY_MAGNITUDE_ROLLING || Mathf.Abs( rigidbody.velocity.z ) > CAudio.MIN_VELOCITY_MAGNITUDE_ROLLING )
+        {
+            // SoundIsPlaying will return a list containing the GameObjects with the provided name, 0 = the sound isn't playing.
+            if ( m_iAudioID <= 0 )
+                m_iAudioID = CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_ROLLING, true, true, true, 0.1f );
+        }
+        else
+        {
+            if ( m_iAudioID > 0 )
+            { 
+                // The stop sound function will check if the sound is playing before stopping it.
+                CAudioControl.StopSound( m_iAudioID, false );
+                m_iAudioID = 0;
+            }
+        }
 
         // The following variables will be used to calculate velocity.
         float fHorizontalInput = 0;

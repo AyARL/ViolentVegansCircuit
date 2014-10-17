@@ -29,4 +29,22 @@ public static class CustomMenuItems
     {
         ScriptableObjectUtility.CreateResource<LoadingAndSavingSettings>();
     }
+
+    [MenuItem("Arc Flash/Settings/Audio")]
+    public static void CreateAudioSO()
+    {
+        ScriptableObjectUtility.CreateAsset<AudioSettings>();
+    }
+
+    [MenuItem("Arc Flash/Tutorial/Tutorial Instruction")]
+    public static void CreateTutorialInstruction()
+    {
+        ScriptableObjectUtility.CreateAsset<TutorialInstruction>();
+    }
+
+    [MenuItem("Arc Flash/Tutorial/Tutorial Instruction Queue")]
+    public static void CreateTutorialInstructionQueue()
+    {
+        ScriptableObjectUtility.CreateResource<TutorialInstructionQueue>();
+    }
 }

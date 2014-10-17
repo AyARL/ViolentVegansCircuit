@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Circuit;
 
 public class EndTileStateControl : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class EndTileStateControl : MonoBehaviour
 
     public void TileActivated()
     {
+        CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_CHIP_POWER, false, true, false, 0.3f );
         Activated = true;
         StartCoroutine(AnimateTile());
     }

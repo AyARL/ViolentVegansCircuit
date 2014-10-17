@@ -27,6 +27,7 @@ namespace Circuit
         public const string TAG_TILE = "Tile";
         public const string TAG_WALL = "Wall";
         public const string TAG_AUDIO_CONTROLLER = "AudioController";
+        public const string TAG_AUDIO = "Audio";
     }
 
     public class CErrorStrings
@@ -38,6 +39,8 @@ namespace Circuit
         public const string ERROR_MISSING_COMPONENT = "Missing component";
         public const string ERROR_UNRECOGNIZED_NAME = "Provided name is not handled by current function.";
         public const string ERROR_UNMATCHED_AUDIO_CLIP = "Unable to match provided audio file to available patterns.";
+        public const string ERROR_AUDIO_FILES_NOT_LOADED = "Audio Controller has indicated that it hasn't finished loading all audio files.";
+        public const string ERROR_AUDIO_FAILED_RELOAD = "Could not load audio resources.";
     }
 
     public class CAnimatorConstants
@@ -71,5 +74,15 @@ namespace Circuit
 
         // Valid file extensions.
         public const string FILE_TYPE_MP3 = ".mp3";
+        public const string FILE_TYPE_WAV = ".wav";
+
+        // Audio altering variables.
+        public const float MIN_VELOCITY_MAGNITUDE_ROLLING = 2.0f; 
+        public const float AUDIO_FADE_VARIABLE = 0.3f;
+    }
+
+    public class CResourcePacks
+    {
+        public const string RESOURCE_CONTAINER_AUDIO_OBJECTS = "AudioSettings";
     }
 }
