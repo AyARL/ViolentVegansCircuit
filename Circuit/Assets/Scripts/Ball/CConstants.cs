@@ -40,6 +40,7 @@ namespace Circuit
         public const string ERROR_UNRECOGNIZED_NAME = "Provided name is not handled by current function.";
         public const string ERROR_UNMATCHED_AUDIO_CLIP = "Unable to match provided audio file to available patterns.";
         public const string ERROR_AUDIO_FILES_NOT_LOADED = "Audio Controller has indicated that it hasn't finished loading all audio files.";
+        public const string ERROR_AUDIO_FAILED_RELOAD = "Could not load audio resources.";
     }
 
     public class CAnimatorConstants
@@ -78,5 +79,10 @@ namespace Circuit
         // Audio altering variables.
         public const float MIN_VELOCITY_MAGNITUDE_ROLLING = 2.0f; 
         public const float AUDIO_FADE_VARIABLE = 0.3f;
+    }
+
+    public class CResourcePacks
+    {
+        public const string RESOURCE_CONTAINER_AUDIO_OBJECTS = "AudioSettings";
     }
 }

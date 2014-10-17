@@ -10,6 +10,9 @@ using Circuit;
 [ RequireComponent( typeof( CStaticCoroutine ) ) ]
 public class CAudioControl : MonoBehaviour {
 
+    private static AudioSettings m_AudioResource = null;
+    public static AudioSettings AudioResource { get { return m_AudioResource; } set { m_AudioResource = value; } }
+
     private static List< GameObject > m_liActiveAudioObjects = new List< GameObject >();
 
     private static Dictionary< string, int > m_dKillSignals = new Dictionary< string, int >();
@@ -53,7 +56,7 @@ public class CAudioControl : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               AddClipToDictionary
     /////////////////////////////////////////////////////////////////////////////
-    IEnumerator AddClipToDictionary( string strFilePath )
+    IEnumerator AddClipToDictionary( AudioClip aClip )
     {
         // Error reporting.
         string strFunctionName = "CAudioControl::AddClipToDictionary()";
@@ -61,16 +64,9 @@ public class CAudioControl : MonoBehaviour {
         // Will be used as a dictionary key if an audio file can be matched to a pattern.
         string strDictionaryKey = "";
 
-        // Attempt to get the AudioClip from the provided file path.
-        WWW www = new WWW( "file://" + strFilePath );
-        AudioClip aClip = www.GetAudioClip( false );
-
         // Yield if the clip isn't ready yet.
         while( false == aClip.isReadyToPlay )
-            yield return www;
-
-        // Set the clip's name.
-        aClip.name = Path.GetFileName( strFilePath );
+            yield return null;
 
         // Clip is ready, we need to identify it.
         foreach ( string strPattern in m_liRegexPatterns )
@@ -92,7 +88,7 @@ public class CAudioControl : MonoBehaviour {
         if ( true == string.IsNullOrEmpty( strDictionaryKey ) )
         {
             // Report that we couldn't find a pattern match.
-            Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_UNMATCHED_AUDIO_CLIP, strFunctionName, strFilePath ) );
+            Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_UNMATCHED_AUDIO_CLIP, strFunctionName, aClip.name ) );
 
         }
 
@@ -196,21 +192,39 @@ public class CAudioControl : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     private void ReloadSounds()
     {
+        string strFunctionName = "CAudioControl::ReloadSounds()";
+
         // This function will clear the existing dictionary and reload all sounds.
         m_dAudioClipContainer.Clear();
 
+        if ( null == m_AudioResource )
+        {
+            m_AudioResource = Resources.Load< AudioSettings >( CResourcePacks.RESOURCE_CONTAINER_AUDIO_OBJECTS );
+            if ( null == m_AudioResource )
+            {
+                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_AUDIO_FAILED_RELOAD, strFunctionName, CResourcePacks.RESOURCE_CONTAINER_AUDIO_OBJECTS ) );
+                return;
+            }
+        }
+
+        // Loop through available clips and add them to the dictionary.
+        foreach ( AudioClip aClip in m_AudioResource.AudioObjects )
+        {
+            StartCoroutine( AddClipToDictionary( aClip ) );
+        }
+
         // Get a handle on the Audio directory.
-        DirectoryInfo directoryInfo = new DirectoryInfo( CAudio.PATH_AUDIO );
+        //DirectoryInfo directoryInfo = new DirectoryInfo( CAudio.PATH_AUDIO );
 
         // Holy crap I'm using a lambda. P.S. We're verifying directory contents for valid audio files.
-        FileInfo[] rgFileInfo = directoryInfo.GetFiles().Where( x => IsValidAudioType( Path.GetExtension( x.Name ) ) ).ToArray();
+        //FileInfo[] rgFileInfo = directoryInfo.GetFiles().Where( x => IsValidAudioType( Path.GetExtension( x.Name ) ) ).ToArray();
         
         // Loop through the files we found and attempt to load them into the dictionary.
-        foreach ( FileInfo fileInfo in rgFileInfo )
-        {
+        //foreach ( FileInfo fileInfo in rgFileInfo )
+        //{
             // Attempt to load the clip to dictionary.
-            StartCoroutine( AddClipToDictionary( fileInfo.FullName ) );
-        }
+        //    StartCoroutine( AddClipToDictionary( fileInfo.FullName ) );
+        //}
 
     }
 

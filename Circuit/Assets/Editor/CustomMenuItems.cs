@@ -29,4 +29,10 @@ public static class CustomMenuItems
     {
         ScriptableObjectUtility.CreateResource<LoadingAndSavingSettings>();
     }
+
+    [MenuItem("Arc Flash/Settings/Audio")]
+    public static void CreateAudioSO()
+    {
+        ScriptableObjectUtility.CreateAsset<AudioSettings>();
+    }
 }
