@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Pathfinding.Serialization.JsonFx;
+using Circuit;
 
 public class GameController : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class GameController : MonoBehaviour
 
     private int endPointsTotal = -1;
     private int numberOfInactiveEndPoints = -1;
+
+    private int m_iMusicID;
 
     private void Start()
     {
@@ -56,6 +59,10 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Setup()
     {
+        // Start up the music.
+        if (m_iMusicID <= 0)
+            m_iMusicID = CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_MUSIC, true, true, true, 0.3f);
+
         flowControl.OnImpulseRemoved += ImpulseLost;
         flowControl.OnEndPointActivated += EndPointActivated;
 
@@ -96,13 +103,13 @@ public class GameController : MonoBehaviour
         {
             yield return null;
 
-            if(WinConditionMet)
+            if (WinConditionMet)
             {
                 gameState = GameState.Game_Win;
                 yield break;
             }
 
-            if(FailConditionMet)
+            if (FailConditionMet)
             {
                 gameState = GameState.Game_Fail;
                 yield break;
@@ -112,7 +119,13 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Win()
     {
-        VibrationManager.Vibrate(1000);
+        // Stop the music.
+        CAudioControl.StopSound(m_iMusicID);
+        m_iMusicID = 0;
+
+        CAudioControl.ClearContainers();
+
+        Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
@@ -129,7 +142,13 @@ public class GameController : MonoBehaviour
 
     private IEnumerator Game_Fail()
     {
-        VibrationManager.Vibrate(1000);
+        // Stop the music.
+        CAudioControl.StopSound(m_iMusicID);
+        m_iMusicID = 0;
+
+        CAudioControl.ClearContainers();
+
+        Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
@@ -156,7 +175,7 @@ public class GameController : MonoBehaviour
     private void EndPointActivated()
     {
         numberOfInactiveEndPoints -= 1;
-        if(numberOfInactiveEndPoints == 0)
+        if (numberOfInactiveEndPoints == 0)
         {
             WinConditionMet = true;
         }
@@ -196,7 +215,7 @@ public class GameController : MonoBehaviour
 
     private int CalculateAwardedStars(int activatedChips)
     {
-        if(activatedChips == 0)
+        if (activatedChips == 0)
         {
             return 0;
         }
