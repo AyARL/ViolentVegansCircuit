@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Linq;
 
 public class TutorialOverlay : MonoBehaviour
 {
     private GameObject grid = null;
-    private Image[] overlay = null;
+    private OverlayTile[] overlay = null;
 
     [SerializeField]
     private int width = 8;
@@ -20,6 +21,13 @@ public class TutorialOverlay : MonoBehaviour
     [SerializeField]
     private Color highlightColor = Color.white;
 
+    private OverlayTile[] highlights = null;
+
+    private void Start()
+    {
+        Recalculate();
+    }
+
     public void DetectOverlay()
     {
         if (overlay == null)
@@ -27,7 +35,7 @@ public class TutorialOverlay : MonoBehaviour
             grid = GetComponentInChildren<GridLayoutGroup>().gameObject;
             if (grid != null)
             {
-                overlay = new Image[width * height];
+                overlay = new OverlayTile[width * height];
                 for (int i = 0; i < width * height; i++)
                 {
                     int x = (i % width);
@@ -37,7 +45,7 @@ public class TutorialOverlay : MonoBehaviour
                     panel.name = string.Format("Overlay ({0}, {1})", x, y);
 
                     OverlayTile overlayTile = panel.GetComponent<OverlayTile>();
-                    if(overlayTile == null)
+                    if (overlayTile == null)
                     {
                         overlayTile = panel.AddComponent<OverlayTile>();
                     }
@@ -46,7 +54,8 @@ public class TutorialOverlay : MonoBehaviour
                     overlayTile.Y = y;
                     overlayTile.SetImage(overlayImage);
                     overlayTile.SetColor(hideColor);
-                    
+
+                    overlay[i] = overlayTile;
                 }
             }
         }
@@ -57,4 +66,31 @@ public class TutorialOverlay : MonoBehaviour
         overlay = null;
         DetectOverlay();
     }
+
+    public void SetOverlayHighlights(Vector2Int[] tilesToHighlight)
+    {
+        if(highlights != null)
+        {
+            foreach(OverlayTile tile in highlights)
+            {
+                tile.SetColor(hideColor);
+            }
+            highlights = null;
+        }
+
+        highlights = new OverlayTile[tilesToHighlight.Length];
+        int i = 0;
+        foreach(Vector2Int coord in tilesToHighlight)
+        {
+            var tile = overlay.FirstOrDefault(ot => ot.X == coord.X && ot.Y == coord.Y);
+            if(tile != null)
+            {
+                tile.SetColor(highlightColor);
+                highlights[i] = tile;
+                i++;
+            }
+        }
+    }
+
+
 }

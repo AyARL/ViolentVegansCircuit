@@ -28,14 +28,14 @@ public class GameController : MonoBehaviour
 
     protected int m_iMusicID;
 
-    private void Start()
+    protected virtual void Start()
     {
         gameState = GameState.Game_Start;
         StartCoroutine(StateMachine());
     }
 
     // There isn't that much game logic, so a simple state machine should be enough
-    protected IEnumerator StateMachine()
+    protected virtual IEnumerator StateMachine()
     {
         while (true)
         {
@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    protected IEnumerator Game_Start()
+    protected virtual IEnumerator Game_Start()
     {
         circuitBoard = board.GetComponent<CircuitBoard>();
         flowControl = board.GetComponent<BoardFlowControl>();
@@ -56,7 +56,7 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    protected IEnumerator Game_Setup()
+    protected virtual IEnumerator Game_Setup()
     {
         // Start up the music.
         if (m_iMusicID <= 0)
@@ -90,7 +90,7 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    protected IEnumerator Game_Play()
+    protected virtual IEnumerator Game_Play()
     {
         // Spawn Impulse
         flowControl.SpawnImpulse();
@@ -114,7 +114,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    protected IEnumerator Game_Win()
+    protected virtual IEnumerator Game_Win()
     {
         // Stop the music.
         CAudioControl.StopSound(m_iMusicID);
@@ -138,7 +138,7 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    protected IEnumerator Game_Fail()
+    protected virtual IEnumerator Game_Fail()
     {
         // Stop the music.
         CAudioControl.StopSound(m_iMusicID);

@@ -2,16 +2,74 @@
 using System.Collections;
 using Circuit;
 using System.Linq;
+using UnityEngine.UI;
 
 public class TutorialGameController : GameController
 {
-    public enum TutorialState { Tutorial_None, Tutorial_Start, Tutorial_Play, Tutorial_Tether, Tutorial_Win, Tutorial_Fail }
-    private TutorialState tutorialState = TutorialState.Tutorial_None;
+    public enum TutorialState { Tutorial_None, Tutorial_Start, Tutorial_Play, Tutorial_Win, Tutorial_Fail, Tutorial_ImpulseLost }
+    private TutorialState tutorialState = TutorialState.Tutorial_None;  // Use SetTutorialState to change this
 
     [SerializeField]
     private TutorialInstructionQueue tutorialInstructions = null;
 
-    protected IEnumerator StateMachine()
+    [SerializeField]
+    private TutorialOverlay overlayScript = null;
+
+    [SerializeField]
+    private Text textField = null;
+
+    private IEnumerator SetTutorialState(TutorialState newState)
+    {
+        tutorialState = newState;
+        var instructions = tutorialInstructions.GetInstructionsForState(newState);
+        if(instructions != null)
+        {
+            foreach(TutorialInstruction instruction in instructions)
+            {
+                yield return StartCoroutine(ScaleTime(instruction.TimeScale, 5f));
+
+                if (overlayScript != null && instruction.UseOverlay)
+                {
+                    overlayScript.gameObject.SetActive(true);
+                    overlayScript.SetOverlayHighlights(instruction.OverlayTilesToHighlight);
+                }
+
+                textField.text = instruction.InstructionText;
+
+                while(!Input.GetMouseButtonUp(0))
+                {
+                    yield return null;
+                }
+
+                if (overlayScript != null)
+                {
+                    overlayScript.gameObject.SetActive(false);
+                }
+
+                textField.text = "";
+                Time.timeScale = 1f;
+            }
+        }
+
+        yield break;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
+        if(tutorialInstructions != null)
+        {
+            tutorialInstructions.Initialise();
+        }
+
+        if(overlayScript != null)
+        {
+            overlayScript.gameObject.SetActive(false);
+        }
+    }
+
+    protected override IEnumerator StateMachine()
     {
         while (true)
         {
@@ -20,7 +78,7 @@ public class TutorialGameController : GameController
         }
     }
 
-    protected IEnumerator Game_Start()
+    protected override IEnumerator Game_Start()
     {
         circuitBoard = board.GetComponent<CircuitBoard>();
         flowControl = board.GetComponent<BoardFlowControl>();
@@ -32,7 +90,7 @@ public class TutorialGameController : GameController
         yield break;
     }
 
-    protected IEnumerator Game_Setup()
+    protected override IEnumerator Game_Setup()
     {
         // Start up the music.
         if (m_iMusicID <= 0)
@@ -60,17 +118,20 @@ public class TutorialGameController : GameController
         PlayerFace.SetActive(true);
         Player.SetActive(true);
 
+        yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Start));
         yield return new WaitForSeconds(1f);
 
         gameState = GameState.Game_Play;
         yield break;
     }
 
-    protected IEnumerator Game_Play()
+    protected override IEnumerator Game_Play()
     {
         // Spawn Impulse
         flowControl.SpawnImpulse();
         flowControl.RunImpulses();
+
+        yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Play));
 
         while (true)
         {
@@ -90,7 +151,7 @@ public class TutorialGameController : GameController
         }
     }
 
-    protected IEnumerator Game_Win()
+    protected override IEnumerator Game_Win()
     {
         // Stop the music.
         CAudioControl.StopSound(m_iMusicID);
@@ -103,10 +164,11 @@ public class TutorialGameController : GameController
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
-        Debug.Log("Win!");
-
         SetLevelStatus(true);
         yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Win));
+
         if (LoadingManager.LevelLoadingSettings != null)
         {
             LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.LevelEndScreen);
@@ -114,7 +176,7 @@ public class TutorialGameController : GameController
         yield break;
     }
 
-    protected IEnumerator Game_Fail()
+    protected override IEnumerator Game_Fail()
     {
         // Stop the music.
         CAudioControl.StopSound(m_iMusicID);
@@ -130,6 +192,9 @@ public class TutorialGameController : GameController
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
         Utility.Shuffle(tileOrderIndices);
 
+
+        yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Fail));
+
         foreach (int i in tileOrderIndices)
         {
             circuitBoard.Tiles[i].GetComponentInChildren<Animator>().SetTrigger("FallOut");
@@ -137,34 +202,25 @@ public class TutorialGameController : GameController
         }
 
         SetLevelStatus(false);
+
         if (LoadingManager.LevelLoadingSettings != null)
         {
             LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.LevelEndScreen);
         }
     }
 
-    protected void EndPointActivated()
+    private IEnumerator ScaleTime(float targetScale, float scalingTime)
     {
-        numberOfInactiveEndPoints -= 1;
-        if (numberOfInactiveEndPoints == 0)
-        {
-            WinConditionMet = true;
-        }
-    }
+        float speed = Mathf.Abs(Time.timeScale - targetScale) / scalingTime;
+        float t = 0;
+        float deltaTime = Time.fixedDeltaTime;
 
-    protected void ImpulseLost(int impulsesLeft)
-    {
-        if (impulsesLeft == 0)
+        while(Mathf.Abs(Time.timeScale - targetScale) > 0.1f)
         {
-            if (numberOfInactiveEndPoints == endPointsTotal)
-            {
-                FailConditionMet = true;
-            }
-            else
-            {
-                WinConditionMet = true;
-            }
+            Time.timeScale = Mathf.Lerp(Time.timeScale, targetScale, t);
+            t += speed * deltaTime;
+            yield return null;
         }
+        Time.timeScale = targetScale;
     }
-
 }
