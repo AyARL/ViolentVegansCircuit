@@ -22,7 +22,7 @@ public class BoardFlowControl : MonoBehaviour
     private List<Impulse> impulses;
 
     // Called when impulse is destroyed by reaching empty connector, passes number of remaining impulses as parameter
-    public UnityAction<int> OnImpulseRemoved { get; set; }
+    public UnityAction<int, bool> OnImpulseRemoved { get; set; }
 
     // Called when the impulse reaches 
     public UnityAction OnEndPointActivated { get; set; }
@@ -154,7 +154,7 @@ public class BoardFlowControl : MonoBehaviour
         {
             if(!outMarker.GetComponentInParent<CircuitTileFlow>().BallAttached)
             {
-                RemoveImpulse(impulse);
+                RemoveImpulse(impulse, true);
                 return true;
             }
 
@@ -232,7 +232,7 @@ public class BoardFlowControl : MonoBehaviour
                 }
                 else
                 {
-                    RemoveImpulse(impulse);
+                    RemoveImpulse(impulse, true);
                 }
                 return true;
             }
@@ -249,13 +249,13 @@ public class BoardFlowControl : MonoBehaviour
         impulses.Clear();
     }
 
-    private void RemoveImpulse(Impulse impulse)
+    private void RemoveImpulse(Impulse impulse, bool lost)
     {
         impulses.Remove(impulse);
         Destroy(impulse.gameObject);
         if(OnImpulseRemoved != null)
         {
-            OnImpulseRemoved(impulses.Count);
+            OnImpulseRemoved(impulses.Count, lost);
         }
     }
 
@@ -265,6 +265,6 @@ public class BoardFlowControl : MonoBehaviour
         {
             OnEndPointActivated();
         }
-        RemoveImpulse(impulse);
+        RemoveImpulse(impulse, false);
     }
 }

@@ -121,16 +121,15 @@ public class TutorialGameController : GameController
         yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Start));
         yield return new WaitForSeconds(1f);
 
+        flowControl.SpawnImpulse();
+        flowControl.RunImpulses();
+
         gameState = GameState.Game_Play;
         yield break;
     }
 
     protected override IEnumerator Game_Play()
     {
-        // Spawn Impulse
-        flowControl.SpawnImpulse();
-        flowControl.RunImpulses();
-
         yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Play));
 
         while (true)

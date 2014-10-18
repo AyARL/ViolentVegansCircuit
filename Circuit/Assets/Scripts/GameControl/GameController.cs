@@ -28,6 +28,9 @@ public class GameController : MonoBehaviour
 
     protected int m_iMusicID;
 
+    [SerializeField]
+    protected Color defaultBgColour = new Color(0f, 0f, 0f);
+
     protected virtual void Start()
     {
         gameState = GameState.Game_Start;
@@ -169,6 +172,8 @@ public class GameController : MonoBehaviour
 
     protected void EndPointActivated()
     {
+        StartCoroutine(FlashBackgroundColor(Color.cyan));
+
         numberOfInactiveEndPoints -= 1;
         if (numberOfInactiveEndPoints == 0)
         {
@@ -176,8 +181,13 @@ public class GameController : MonoBehaviour
         }
     }
 
-    protected void ImpulseLost(int impulsesLeft)
+    protected void ImpulseLost(int impulsesLeft, bool lost)
     {
+        if (lost)
+        {
+            StartCoroutine(FlashBackgroundColor(Color.red));
+        }
+
         if (impulsesLeft == 0)
         {
             if (numberOfInactiveEndPoints == endPointsTotal)
@@ -226,5 +236,21 @@ public class GameController : MonoBehaviour
         {
             return 2;
         }
+    }
+
+    protected IEnumerator FlashBackgroundColor(Color color)
+    {
+        float speed = 1f;
+        float t = 0f;
+        Camera.main.backgroundColor = color;
+
+        while(Camera.main.backgroundColor != defaultBgColour)
+        {
+            Camera.main.backgroundColor = Color.Lerp(color, defaultBgColour, t);
+            t += speed * Time.deltaTime;
+            yield return null;
+        }
+
+        yield break;
     }
 }
