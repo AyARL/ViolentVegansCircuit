@@ -1,4 +1,2 @@
 ViolentVegansCircuit
 ====================
-
-Arc Flash
