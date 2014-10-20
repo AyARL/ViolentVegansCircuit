@@ -22,7 +22,8 @@ public class CircuitTile : MonoBehaviour
         Tile_Corner_Left, 
         Tile_Corner_Right, 
         Tile_TIntersection, 
-        Tile_XIntersection 
+        Tile_XIntersection,
+        Tile_Obstacle
     }
 
     [SerializeField] [HideInInspector]

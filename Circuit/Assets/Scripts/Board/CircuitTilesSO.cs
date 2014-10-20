@@ -37,6 +37,9 @@ public class CircuitTilesSO : ScriptableObject
     [SerializeField]
     private GameObject XIntersectionTile = null;
 
+    [SerializeField]
+    private GameObject ObstacleTile = null;
+
     
 
     Dictionary<CircuitTile.CircuitTileType, GameObject> circuitTilePrefabs;
@@ -57,5 +60,6 @@ public class CircuitTilesSO : ScriptableObject
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Corner_Right, RightCornerTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_TIntersection, TIntersectionTile);
         circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_XIntersection, XIntersectionTile);
+        circuitTilePrefabs.Add(CircuitTile.CircuitTileType.Tile_Obstacle, ObstacleTile);
     }
 }
