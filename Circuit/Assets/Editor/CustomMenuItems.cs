@@ -47,4 +47,16 @@ public static class CustomMenuItems
     {
         ScriptableObjectUtility.CreateResource<TutorialInstructionQueue>();
     }
+
+    [MenuItem("Arc Flash/Rewards/Create Reward")]
+    public static void CreateReward()
+    {
+        ScriptableObjectUtility.CreateAsset<Reward>();
+    }
+
+    [MenuItem("Arc Flash/Rewards/Create Reward List")]
+    public static void CreateRewardList()
+    {
+        ScriptableObjectUtility.CreateResource<RewardList>();
+    }
 }

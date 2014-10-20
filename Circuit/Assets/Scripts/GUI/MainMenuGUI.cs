@@ -11,6 +11,9 @@ public class MainMenuGUI : MonoBehaviour
     [SerializeField]
     private GameObject levelSelectScreen = null;
 
+    [SerializeField]
+    private GameObject rewardsScreen = null;
+
     private void Start()
     {
         if (SaveLoadFacilitator.Facilitator.HasSavedProgress())
@@ -57,6 +60,12 @@ public class MainMenuGUI : MonoBehaviour
     {
         gameObject.SetActive(false);
         levelSelectScreen.SetActive(true);
+    }
+
+    public void Rewards()
+    {
+        gameObject.SetActive(false);
+        rewardsScreen.SetActive(true);
     }
 
     public void Settings()
