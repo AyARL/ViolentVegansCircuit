@@ -37,7 +37,8 @@ public class CircuitTileFlow : MonoBehaviour
 
     public void Initialise()
     {
-        if (gameObject.GetComponent<CircuitTile>().TileType != CircuitTile.CircuitTileType.Tile_Empty)
+        if (gameObject.GetComponent<CircuitTile>().TileType != CircuitTile.CircuitTileType.Tile_Empty && 
+            gameObject.GetComponent<CircuitTile>().TileType != CircuitTile.CircuitTileType.Tile_Obstacle)
         {
             entryMarker = gameObject.GetComponentInChildren<StartPathMarker>();
             if (entryMarker != null)
