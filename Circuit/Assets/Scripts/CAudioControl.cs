@@ -259,9 +259,32 @@ public class CAudioControl : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     public static void StopSound( int iSourceID, bool bFadeOut = true )
     {
-        // Retrieve the gameobject with the correct clip id.
-        GameObject goAudioObject = m_liActiveAudioObjects.Where( x => x.GetComponent< CAudioClip >().ClipId == iSourceID ).First();
+        // The below GameObject will contain the Audio Object.
+        GameObject goAudioObject = null;
 
+        // Loop through all active audio objects and retrieve the object that
+        //  matches the provided id.
+        foreach ( GameObject goAudio in m_liActiveAudioObjects )
+        {
+            if ( goAudio == null )
+            {
+                m_liActiveAudioObjects.Remove( goAudio );
+                return;
+            }
+
+            // Attempt to retrieve the audio clip object.
+            CAudioClip aClip = goAudio.GetComponent< CAudioClip >();
+            if ( aClip == null )
+                return;
+
+            if ( aClip.ClipId == iSourceID )
+            {
+                // We found a match.
+                goAudioObject = goAudio;
+            }
+        }
+
+        // Check if we managed to find the gameobject.
         if ( goAudioObject == null )
             return;
 
