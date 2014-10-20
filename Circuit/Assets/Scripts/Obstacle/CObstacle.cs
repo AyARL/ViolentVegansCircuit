@@ -5,7 +5,7 @@ using Circuit;
 [ RequireComponent( typeof( Animator ) ) ]
 public class CObstacle : MonoBehaviour {
 
-    enum EObstacleState
+    public enum EObstacleState
     {
         STATE_NONE,
         STATE_NORMAL,
@@ -17,7 +17,7 @@ public class CObstacle : MonoBehaviour {
     private float m_fHealth = 100.0f;
 
     [ SerializeField ]
-    private EObstacleState m_eObstacleState = EObstacleState.STATE_NONE;
+    EObstacleState m_eObstacleState = EObstacleState.STATE_NONE;
     public EObstacleState ObstacleState { get { return m_eObstacleState; } private set { m_eObstacleState = value; } }
 
 	/////////////////////////////////////////////////////////////////////////////
