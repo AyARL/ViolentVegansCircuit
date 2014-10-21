@@ -10,28 +10,29 @@ public enum EMovementType
     MOVEMENT_FORCE_CONSTANT,
 }
 
-[ RequireComponent( typeof( Rigidbody ) ) ]
-[ RequireComponent( typeof( Animator ) ) ]
-public class CBall : MonoBehaviour {
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Animator))]
+public class CBall : MonoBehaviour
+{
 
     public enum EBallState
     {
-        STATE_NORMAL    = 0,
-        STATE_DIZZY     = 1,
-        STATE_HAPPY     = 2,
-        STATE_UNHAPPY   = 3,
-        STATE_HIT       = 4,
+        STATE_NORMAL = 0,
+        STATE_DIZZY = 1,
+        STATE_HAPPY = 2,
+        STATE_UNHAPPY = 3,
+        STATE_HIT = 4,
     }
 
     private Vector3 m_v3InitialAccelerometerPosition;
 
     // Holds the audio ID of the sound being played by this gameobject. In this case the ball rolling.
-    [ SerializeField ]
+    [SerializeField]
     private int m_iAudioID = 0;
     public int AudioID { get { return m_iAudioID; } private set { m_iAudioID = value; } }
 
     // Indicates if we're holding a charge.
-    [ SerializeField ]
+    [SerializeField]
     private bool m_bHoldsCharge = false;
     public bool HoldsCharge { get { return m_bHoldsCharge; } private set { m_bHoldsCharge = value; } }
 
@@ -45,25 +46,29 @@ public class CBall : MonoBehaviour {
 
     private CAudioControl m_cAudioController;
 
-	/////////////////////////////////////////////////////////////////////////////
+    // Prefab used to spawn the ball shadow
+    [SerializeField]
+    private GameObject shadowPrefab = null;
+
+    /////////////////////////////////////////////////////////////////////////////
     /// Function:               Start
     /////////////////////////////////////////////////////////////////////////////
-	void Start () 
+    void Start()
     {
         string strFunctionName = "CBall::Start()";
 
         // Find the audio controller game object and report any errors.
-        GameObject goAudioController = GameObject.FindGameObjectWithTag( CTags.TAG_AUDIO_CONTROLLER );
-        if ( null == goAudioController )
+        GameObject goAudioController = GameObject.FindGameObjectWithTag(CTags.TAG_AUDIO_CONTROLLER);
+        if (null == goAudioController)
         {
-            Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_NULL_OBJECT, strFunctionName, typeof( GameObject ) ) );
+            Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_NULL_OBJECT, strFunctionName, typeof(GameObject)));
         }
 
         // Get the Audio controller component.
-        m_cAudioController = goAudioController.GetComponent< CAudioControl >();
-        if ( null == m_cAudioController )
+        m_cAudioController = goAudioController.GetComponent<CAudioControl>();
+        if (null == m_cAudioController)
         {
-            Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof( CAudioControl ) ) );
+            Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof(CAudioControl)));
         }
 
         // Force the screen to remain in the Landscape left orientation.
@@ -71,13 +76,20 @@ public class CBall : MonoBehaviour {
         Screen.orientation = ScreenOrientation.LandscapeLeft;
 
         // Get initial accelorometer values when the user first launches the game.
-	    m_v3InitialAccelerometerPosition = Input.acceleration;
-	}
-	
+        m_v3InitialAccelerometerPosition = Input.acceleration;
+
+        // Spawn and initialise the shadow
+        if(shadowPrefab != null)
+        {
+            GameObject shadow = Instantiate(shadowPrefab) as GameObject;
+            shadow.GetComponent<BallShadow>().Ball = gameObject;
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               Update
     /////////////////////////////////////////////////////////////////////////////
-	void Update () 
+    void Update()
     {
         // Check for touch input.
         RunTouchLogic();
@@ -92,36 +104,36 @@ public class CBall : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               OnCollisionStay
     /////////////////////////////////////////////////////////////////////////////
-    void OnCollisionStay( Collision cCollision )
+    void OnCollisionStay(Collision cCollision)
     {
         // Check if the detected collision is a tile.
-        if ( cCollision.gameObject.tag == CTags.TAG_TILE )
+        if (cCollision.gameObject.tag == CTags.TAG_TILE)
         {
             // Send a message to the tile containing the vector3 position.
-            cCollision.gameObject.SendMessageUpwards( "OnReceiveMessage", transform.position, SendMessageOptions.DontRequireReceiver );
+            cCollision.gameObject.SendMessageUpwards("OnReceiveMessage", transform.position, SendMessageOptions.DontRequireReceiver);
         }
     }
 
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               OnCollisionEnter
     /////////////////////////////////////////////////////////////////////////////
-    void OnCollisionEnter( Collision cCollision )
+    void OnCollisionEnter(Collision cCollision)
     {
         // Error reporting.
         string strFunctionName = "CBall::OnCollisionEnter()";
 
         // Check if we hit a wall, and shake the camera if we did.
-        if ( cCollision.gameObject.tag == CTags.TAG_WALL )
+        if (cCollision.gameObject.tag == CTags.TAG_WALL)
         {
             // Get the main Camera.
             GameObject goMainCamera = Camera.main.gameObject;
 
             // Retrieve the camera controls so we can make the screen shake.
-            CCameraControl cCamControls = goMainCamera.GetComponent< CCameraControl >();
-            if ( null == cCamControls )
+            CCameraControl cCamControls = goMainCamera.GetComponent<CCameraControl>();
+            if (null == cCamControls)
             {
                 // We couldn't find the component, report error and return.
-                Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof( CCameraControl ) ) );
+                Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof(CCameraControl)));
                 return;
             }
 
@@ -129,19 +141,19 @@ public class CBall : MonoBehaviour {
             cCamControls.CurrentEffectType = CCameraControl.EEffectType.EFFECT_SHAKE_CAMERA;
 
             // Play the wall hit sound.
-            if ( true == m_cAudioController.AudioFilesLoaded )
+            if (true == m_cAudioController.AudioFilesLoaded)
             {
-                CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.8f );
+                CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.8f);
             }
             else
             {
                 // We couldn't find the component, report error and return.
-                Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_AUDIO_FILES_NOT_LOADED, strFunctionName, typeof( CAudioControl ) ) );
+                Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_AUDIO_FILES_NOT_LOADED, strFunctionName, typeof(CAudioControl)));
                 return;
             }
         }
 
-        if ( cCollision.collider.tag == CTags.TAG_TILE )
+        if (cCollision.collider.tag == CTags.TAG_TILE)
         {
             // Get a handle on the tileflow component.
             //CircuitTileFlow cTileFlow = cCollision.gameObject.GetComponent< CircuitTileFlow >();
@@ -156,13 +168,13 @@ public class CBall : MonoBehaviour {
     /////////////////////////////////////////////////////////////////////////////
     /// Function:               OnCollisionExit
     /////////////////////////////////////////////////////////////////////////////
-    void OnCollisionExit( Collision cCollision )
+    void OnCollisionExit(Collision cCollision)
     {
         // Check if the detected collision is a tile.
-        if ( cCollision.gameObject.tag == CTags.TAG_TILE )
+        if (cCollision.gameObject.tag == CTags.TAG_TILE)
         {
             // Send a message to the tile containing the vector3 position.
-            cCollision.gameObject.SendMessageUpwards( "OnBallExit", transform.position, SendMessageOptions.DontRequireReceiver );
+            cCollision.gameObject.SendMessageUpwards("OnBallExit", transform.position, SendMessageOptions.DontRequireReceiver);
         }
     }
 
@@ -175,18 +187,18 @@ public class CBall : MonoBehaviour {
         string strFunctionName = "CBall::RunMovementLogic()";
 
         // If the ball is moving, play the rolling sound, else make sure it's not playing.
-        if ( Mathf.Abs( rigidbody.velocity.x ) > CAudio.MIN_VELOCITY_MAGNITUDE_ROLLING || Mathf.Abs( rigidbody.velocity.z ) > CAudio.MIN_VELOCITY_MAGNITUDE_ROLLING )
+        if (Mathf.Abs(rigidbody.velocity.x) > CAudio.MIN_VELOCITY_MAGNITUDE_ROLLING || Mathf.Abs(rigidbody.velocity.z) > CAudio.MIN_VELOCITY_MAGNITUDE_ROLLING)
         {
             // SoundIsPlaying will return a list containing the GameObjects with the provided name, 0 = the sound isn't playing.
-            if ( m_iAudioID <= 0 )
-                m_iAudioID = CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_ROLLING, true, true, true, 0.1f );
+            if (m_iAudioID <= 0)
+                m_iAudioID = CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_BALL_ROLLING, true, true, true, 0.1f);
         }
         else
         {
-            if ( m_iAudioID > 0 )
-            { 
+            if (m_iAudioID > 0)
+            {
                 // The stop sound function will check if the sound is playing before stopping it.
-                CAudioControl.StopSound( m_iAudioID, false );
+                CAudioControl.StopSound(m_iAudioID, false);
                 m_iAudioID = 0;
             }
         }
@@ -196,13 +208,13 @@ public class CBall : MonoBehaviour {
         float fVerticalInput = 0;
 
         // Check type of input and act accordingly.
-        switch ( SystemInfo.deviceType )
+        switch (SystemInfo.deviceType)
         {
             case DeviceType.Desktop:
 
                 // Set variables to mouse input.
-                fHorizontalInput = Input.GetAxis( CConstants.CONTROL_MOUSE_X );
-                fVerticalInput = Input.GetAxis( CConstants.CONTROL_MOUSE_Y );
+                fHorizontalInput = Input.GetAxis(CConstants.CONTROL_MOUSE_X);
+                fVerticalInput = Input.GetAxis(CConstants.CONTROL_MOUSE_Y);
 
                 break;
 
@@ -217,22 +229,22 @@ public class CBall : MonoBehaviour {
             default:
 
                 // Unhandled device type.
-                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE , strFunctionName, SystemInfo.deviceType ) );
+                Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE, strFunctionName, SystemInfo.deviceType));
 
                 break;
         }
-	    
+
         // Create the direction vector and normalize it.
-        Vector3 v3Direction = new Vector3( fHorizontalInput, 0, fVerticalInput );
+        Vector3 v3Direction = new Vector3(fHorizontalInput, 0, fVerticalInput);
         v3Direction.Normalize();
 
-        if ( v3Direction.magnitude < 0.5f )
+        if (v3Direction.magnitude < 0.5f)
         {
             return;
         }
 
         // Set the movement type accordingly depending on the can move flag.
-        if ( false == m_bCanMove )
+        if (false == m_bCanMove)
         {
             m_eMovementType = EMovementType.MOVEMENT_NONE;
         }
@@ -243,7 +255,7 @@ public class CBall : MonoBehaviour {
 
         // Move the ball according to the movement type specified - This is only temporary 
         //  as we look into the different movement possibilities until we find one that suits us.
-        switch ( m_eMovementType )
+        switch (m_eMovementType)
         {
             case EMovementType.MOVEMENT_FORCE_CONSTANT:
 
@@ -252,25 +264,25 @@ public class CBall : MonoBehaviour {
                 fSpeedBoost *= Time.deltaTime;
 
                 // Apply Force.
-                rigidbody.AddForce( ( v3Direction * m_fSpeed ) * fSpeedBoost, ForceMode.Force );
+                rigidbody.AddForce((v3Direction * m_fSpeed) * fSpeedBoost, ForceMode.Force);
 
                 break;
 
             case EMovementType.MOVEMENT_FORCE_IMPULSE:
 
                 // Apply impulse force.
-                rigidbody.AddForce( v3Direction * m_fSpeed * Time.deltaTime, ForceMode.Impulse );
+                rigidbody.AddForce(v3Direction * m_fSpeed * Time.deltaTime, ForceMode.Impulse);
 
                 break;
 
             case EMovementType.MOVEMENT_TRANSLATE:
 
                 // Translate the ball's position.
-                transform.Translate( v3Direction * m_fSpeed * Time.deltaTime, Space.World );
-	
+                transform.Translate(v3Direction * m_fSpeed * Time.deltaTime, Space.World);
+
                 break;
 
-                case EMovementType.MOVEMENT_NONE:
+            case EMovementType.MOVEMENT_NONE:
 
                 // Do nothing.
 
@@ -279,7 +291,7 @@ public class CBall : MonoBehaviour {
             default:
 
                 // Unknown variable, report issue.
-                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE , strFunctionName, m_eMovementType ) );
+                Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE, strFunctionName, m_eMovementType));
 
                 break;
         }
@@ -294,7 +306,7 @@ public class CBall : MonoBehaviour {
         string strFunctionName = "CBall::RunStatesLogic()";
 
         // Apply the correct type of animation depending on current state.
-        switch ( m_eCurrentState )
+        switch (m_eCurrentState)
         {
             case EBallState.STATE_DIZZY:
                 break;
@@ -303,9 +315,9 @@ public class CBall : MonoBehaviour {
             case EBallState.STATE_NORMAL:
 
                 // Run the dizzy animation.
-                if ( transform.rigidbody.velocity.x > CConstants.DEFAULT_HIGH_VELOCITY || transform.rigidbody.velocity.z > CConstants.DEFAULT_HIGH_VELOCITY )
+                if (transform.rigidbody.velocity.x > CConstants.DEFAULT_HIGH_VELOCITY || transform.rigidbody.velocity.z > CConstants.DEFAULT_HIGH_VELOCITY)
                 {
-                    
+
                     m_eCurrentState = EBallState.STATE_DIZZY;
                 }
 
@@ -315,9 +327,9 @@ public class CBall : MonoBehaviour {
             case EBallState.STATE_HIT:
                 break;
             default:
-                
+
                 // Unknown variable, report issue.
-                Debug.LogError( string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE, strFunctionName, m_eCurrentState ) );
+                Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_UNRECOGNIZED_VALUE, strFunctionName, m_eCurrentState));
 
                 break;
         }
@@ -332,12 +344,12 @@ public class CBall : MonoBehaviour {
         string strFunctionName = "CBall::RunTouchLogic()";
 
         // According to device type, run touch logic.
-        switch ( SystemInfo.deviceType )
+        switch (SystemInfo.deviceType)
         {
             case DeviceType.Desktop:
 
                 // If the user clicked the left mouse button, we want the ball to stabilise.
-                if ( Input.GetMouseButtonDown( CConstants.CONTROL_MOUSE_LEFT_BUTTON ) )
+                if (Input.GetMouseButtonDown(CConstants.CONTROL_MOUSE_LEFT_BUTTON))
                 {
                     // Invert the can move value.
                     m_bCanMove = !m_bCanMove;
@@ -347,20 +359,20 @@ public class CBall : MonoBehaviour {
             case DeviceType.Handheld:
 
                 // Check if there is a touch on the screen.
-                if ( Input.touches.Length <= 0 )
+                if (Input.touches.Length <= 0)
                 {
                     // There are no touches, do nothing.
                 }
                 else
                 {
                     // Loop through all registered touches and run touch logic.
-                    for ( int i = 0; i < Input.touchCount; ++i )
+                    for (int i = 0; i < Input.touchCount; ++i)
                     {
                         // Verify touch type and act correspondingly
-                        switch ( Input.GetTouch( i ).phase )
+                        switch (Input.GetTouch(i).phase)
                         {
                             case TouchPhase.Began:
-                                
+
                                 // User is currently touching the screen, stop the ball.
                                 m_bCanMove = false;
 
@@ -382,8 +394,8 @@ public class CBall : MonoBehaviour {
 
                 break;
             default:
-                Debug.Log( string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE, strFunctionName, SystemInfo.deviceType ) );
+                Debug.Log(string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE, strFunctionName, SystemInfo.deviceType));
                 break;
-        }          
+        }
     }
 }
