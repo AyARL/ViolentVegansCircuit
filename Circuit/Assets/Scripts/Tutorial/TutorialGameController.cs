@@ -163,8 +163,9 @@ public class TutorialGameController : GameController
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
+        yield return StartCoroutine(PlayEffects(winEffect, 0.1f));
+
         SetLevelStatus(true);
-        yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Win));
 
@@ -187,6 +188,8 @@ public class TutorialGameController : GameController
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
+
+        yield return StartCoroutine(PlayEffects(failEffect, 0f));
 
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
         Utility.Shuffle(tileOrderIndices);

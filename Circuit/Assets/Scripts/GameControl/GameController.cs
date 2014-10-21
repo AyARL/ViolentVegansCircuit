@@ -31,6 +31,11 @@ public class GameController : MonoBehaviour
     [SerializeField]
     protected Color defaultBgColour = new Color(0f, 0f, 0f);
 
+    [SerializeField]
+    protected GameObject winEffect = null;
+    [SerializeField]
+    protected GameObject failEffect = null;
+
     protected virtual void Start()
     {
         gameState = GameState.Game_Start;
@@ -130,10 +135,9 @@ public class GameController : MonoBehaviour
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
-        Debug.Log("Win!");
+        yield return StartCoroutine(PlayEffects(winEffect, 0.1f));
 
         SetLevelStatus(true);
-        yield return new WaitForSeconds(1f);
         if (LoadingManager.LevelLoadingSettings != null)
         {
             LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.LevelEndScreen);
@@ -153,6 +157,8 @@ public class GameController : MonoBehaviour
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
+
+        yield return StartCoroutine(PlayEffects(failEffect, 0f));
 
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
         Utility.Shuffle(tileOrderIndices);
@@ -252,5 +258,18 @@ public class GameController : MonoBehaviour
         }
 
         yield break;
+    }
+
+    protected IEnumerator PlayEffects(GameObject container, float delay)
+    {
+        var particleSystems = container.GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem ps in particleSystems)
+        {
+            ps.Play();
+            if (delay > 0)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+        }
     }
 }
