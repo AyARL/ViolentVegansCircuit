@@ -7,8 +7,8 @@ public class RewardsScreenGUI : MonoBehaviour
     [SerializeField]
     private GameObject backButton = null;
 
-    [SerializeField]
-    private GameObject grid = null;
+    //[SerializeField]
+    //private GameObject grid = null;
 
     [SerializeField]
     private GameObject mainMenuScreen = null;

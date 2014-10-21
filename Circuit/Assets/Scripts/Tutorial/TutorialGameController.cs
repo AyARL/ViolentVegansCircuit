@@ -21,7 +21,7 @@ public class TutorialGameController : GameController
     private IEnumerator SetTutorialState(TutorialState newState)
     {
         tutorialState = newState;
-        var instructions = tutorialInstructions.GetInstructionsForState(newState);
+        var instructions = tutorialInstructions.GetInstructionsForState(tutorialState);
         if(instructions != null)
         {
             foreach(TutorialInstruction instruction in instructions)
