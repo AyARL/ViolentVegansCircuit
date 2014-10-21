@@ -15,7 +15,7 @@ namespace Circuit
         public const int CONTROL_MOUSE_RIGHT_BUTTON = 1;
 
         // Various Default values
-        public const float DEFAULT_SPEED = 60.0f;
+        public const float DEFAULT_SPEED = 50.0f;
         public const float MAX_ROTATION_ANGLE = 15.0f;
         public const float DEFAULT_HIGH_VELOCITY = 5.0f;
     }
