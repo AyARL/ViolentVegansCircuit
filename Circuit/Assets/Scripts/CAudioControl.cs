@@ -33,7 +33,9 @@ public class CAudioControl : MonoBehaviour {
         CAudio.AUDIO_MUSIC,
         CAudio.AUDIO_EFFECT_MENU_SELECT,
         CAudio.AUDIO_EFFECT_GAMEOVER,
-        CAudio.AUDIO_EFFECT_ELECTRIC_LOOP
+        CAudio.AUDIO_EFFECT_ELECTRIC_LOOP,
+        CAudio.AUDIO_EFFECT_LEVEL_COMPLETED,
+        CAudio.AUDIO_EFFECT_STAR_FALL
     };
 
     private bool m_bAudioFilesLoaded = false;

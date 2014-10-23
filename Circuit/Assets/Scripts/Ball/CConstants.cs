@@ -73,7 +73,7 @@ namespace Circuit
 
         // Default regex patterns.
         public const string AUDIO_MUSIC = "Music";
-        public const string AUDIO_EFFECT_GAMEOVER = "GameOver";
+        public const string AUDIO_EFFECT_GAMEOVER = "LevelFailed";
         public const string AUDIO_EFFECT_MENU_SELECT = "Menu_Select";
         public const string AUDIO_EFFECT_ELECTRIC_LOOP = "Electricity_Loop";
         public const string AUDIO_EFFECT_BALL_HIT = "Ball_Hit";
@@ -81,6 +81,8 @@ namespace Circuit
         public const string AUDIO_EFFECT_BALL_ROLLING = "Ball_Rolling";
         public const string AUDIO_EFFECT_ELECTRIC_JOLT = "Electricity_Jolt";
         public const string AUDIO_EFFECT_CHIP_POWER = "PowerUp";
+        public const string AUDIO_EFFECT_LEVEL_COMPLETED = "LevelCompleted";
+        public const string AUDIO_EFFECT_STAR_FALL = "StarDing";
 
         // Valid file extensions.
         public const string FILE_TYPE_MP3 = ".mp3";
