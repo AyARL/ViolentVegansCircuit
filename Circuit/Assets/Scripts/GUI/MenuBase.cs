@@ -3,13 +3,13 @@ using System.Collections;
 using Circuit;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public abstract class MenuBase : MonoBehaviour {
 
     private int buttonSoundId;
 
     protected GameObject[] buttonsInScene;
-
 
     public void OnButtonPressed(string action)
     {
@@ -23,13 +23,10 @@ public abstract class MenuBase : MonoBehaviour {
             buttonSoundId = CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_MENU_SELECT, false, true, false, 1f);
         }
 
-        DisableAllButtons();
         yield return null;
-        CAudioControl.StopSound(buttonSoundId, false);
-        EnableAllButtons();
-        yield return null;
-        Invoke(action, 0f);
 
+        Invoke(action, 0f);
+        CAudioControl.StopSound(buttonSoundId, false);
     }
 
     private void DisableAllButtons()
