@@ -12,7 +12,7 @@ public class ContinueButton : MonoBehaviour
 
         mainMenu.OnContinueAvailable += SetToContinue;
         GetComponentInChildren<Text>().text = "New Game";
-        GetComponent<Button>().onClick.AddListener(() => mainMenu.StartNewGame());
+        GetComponent<Button>().onClick.AddListener(() => mainMenu.OnButtonPressed("StartNewGame"));
     }
 
     private void SetToContinue()
@@ -20,6 +20,6 @@ public class ContinueButton : MonoBehaviour
         GetComponentInParent<MainMenuGUI>().OnContinueAvailable -= SetToContinue;
         GetComponentInChildren<Text>().text = "Continue";
         GetComponent<Button>().onClick.RemoveAllListeners();
-        GetComponent<Button>().onClick.AddListener(() => mainMenu.ContinueGame());
+        GetComponent<Button>().onClick.AddListener(() => mainMenu.OnButtonPressed("ContinueGame"));
     }
 }

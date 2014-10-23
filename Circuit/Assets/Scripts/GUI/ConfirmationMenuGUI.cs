@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-public class ConfirmationMenuGUI : MonoBehaviour
+public class ConfirmationMenuGUI : MenuBase
 {
     [SerializeField]
     private Text titleMessage = null;

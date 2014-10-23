@@ -3,6 +3,7 @@ using System.Collections;
 using Circuit;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class TutorialGameController : GameController
 {
@@ -22,9 +23,9 @@ public class TutorialGameController : GameController
     {
         tutorialState = newState;
         var instructions = tutorialInstructions.GetInstructionsForState(tutorialState);
-        if(instructions != null)
+        if (instructions != null)
         {
-            foreach(TutorialInstruction instruction in instructions)
+            foreach (TutorialInstruction instruction in instructions)
             {
                 yield return StartCoroutine(ScaleTime(instruction.TimeScale, 5f));
 
@@ -36,10 +37,19 @@ public class TutorialGameController : GameController
 
                 textField.text = instruction.InstructionText;
 
-                while(!Input.GetMouseButtonUp(0))
+                while (true)
                 {
-                    yield return null;
+                    // If there is input NOT on UI elements
+                    if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        yield return null;
+                    }
                 }
+
 
                 if (overlayScript != null)
                 {
@@ -58,12 +68,12 @@ public class TutorialGameController : GameController
     {
         base.Start();
 
-        if(tutorialInstructions != null)
+        if (tutorialInstructions != null)
         {
             tutorialInstructions.Initialise();
         }
 
-        if(overlayScript != null)
+        if (overlayScript != null)
         {
             overlayScript.gameObject.SetActive(false);
         }
@@ -73,7 +83,8 @@ public class TutorialGameController : GameController
     {
         while (true)
         {
-            yield return StartCoroutine(gameState.ToString());
+            runningState = StartCoroutine(gameState.ToString());
+            yield return runningState;
             yield return null;
         }
     }
@@ -132,19 +143,25 @@ public class TutorialGameController : GameController
     {
         yield return StartCoroutine(SetTutorialState(TutorialState.Tutorial_Play));
 
-        while (true)
+        inGameGUI.gameObject.SetActive(true);
+
+        while (gameState == GameState.Game_Play)
         {
             yield return null;
 
             if (WinConditionMet)
             {
                 gameState = GameState.Game_Win;
+                inGameGUI.OnPauseGame -= PauseGame;
+                inGameGUI.gameObject.SetActive(false);
                 yield break;
             }
 
             if (FailConditionMet)
             {
                 gameState = GameState.Game_Fail;
+                inGameGUI.OnPauseGame -= PauseGame;
+                inGameGUI.gameObject.SetActive(false);
                 yield break;
             }
         }
@@ -217,7 +234,7 @@ public class TutorialGameController : GameController
         float t = 0;
         float deltaTime = Time.fixedDeltaTime;
 
-        while(Mathf.Abs(Time.timeScale - targetScale) > 0.1f)
+        while (Mathf.Abs(Time.timeScale - targetScale) > 0.1f)
         {
             Time.timeScale = Mathf.Lerp(Time.timeScale, targetScale, t);
             t += speed * deltaTime;

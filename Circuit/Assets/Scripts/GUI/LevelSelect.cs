@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 
-public class LevelSelect : MonoBehaviour
+public class LevelSelect : MenuBase
 {
     [SerializeField]
     private GameObject levelBoxPrefab = null;
@@ -54,7 +54,7 @@ public class LevelSelect : MonoBehaviour
     void OnEnable()
     {
         backButton.SetActive(true);
-        backButton.GetComponent<Button>().onClick.AddListener(() => Exit());
+        backButton.GetComponent<Button>().onClick.AddListener(() => OnButtonPressed("Exit"));
     }
 
     private void CreateLevelBox(bool unlocked, int levelNumber, int starCount = 0)

@@ -2,10 +2,10 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class LevelBox : MonoBehaviour
+public class LevelBox : MenuBase
 {
     [SerializeField]
-    private Text levelNumber = null;
+    private Text levelNumberDisplay = null;
 
     [SerializeField]
     private GameObject[] stars = null;
@@ -13,19 +13,31 @@ public class LevelBox : MonoBehaviour
     [SerializeField]
     private GameObject lockImage = null;
 
+    private int levelNumber;
+
     public void Initialise(int levelNumber, bool unlocked, int starsEarned = 0)
     {
         if (unlocked)
         {
-            this.levelNumber.text = levelNumber.ToString();
+            this.levelNumberDisplay.text = levelNumber.ToString();
             if(starsEarned > 0)
             {
                 DisplayStars(starsEarned);
             }
             lockImage.SetActive(false);
 
-            GetComponent<Button>().onClick.AddListener(() => LoadingManager.LoadLevel(levelNumber + LoadingManager.LevelLoadingSettings.FirstGameLevel - 1));
+            this.levelNumber = levelNumber;
+            GetComponent<Button>().onClick.AddListener(() => OnButtonPressed("LoadLevel"));
         }
+        else
+        {
+            GetComponent<Button>().interactable = false;
+        }
+    }
+
+    private void LoadLevel()
+    {
+        LoadingManager.LoadLevel(levelNumber + LoadingManager.LevelLoadingSettings.FirstGameLevel - 1);
     }
 
     private void DisplayStars(int count)

@@ -3,11 +3,13 @@ using System.Collections;
 using System.Linq;
 using Pathfinding.Serialization.JsonFx;
 using Circuit;
+using UnityEngine.Events;
 
 public class GameController : MonoBehaviour
 {
-    public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail }
+    public enum GameState { Game_Start, Game_Setup, Game_Play, Game_Win, Game_Fail, Game_Pause }
     protected GameState gameState;
+    protected Coroutine runningState; 
 
     [SerializeField]
     protected GameObject board = null;
@@ -19,6 +21,8 @@ public class GameController : MonoBehaviour
     protected GameObject Player = null;
     [SerializeField]
     protected GameObject PlayerFace = null;
+
+    protected InGameGUI inGameGUI = null;
 
     protected bool WinConditionMet = false;
     protected bool FailConditionMet = false;
@@ -36,8 +40,15 @@ public class GameController : MonoBehaviour
     [SerializeField]
     protected GameObject failEffect = null;
 
+    protected float gameTimescale = 1f;
+
     protected virtual void Start()
     {
+        inGameGUI = GameObject.FindGameObjectWithTag("LevelUI").GetComponent<InGameGUI>();
+
+        inGameGUI.OnPauseGame += PauseGame;
+        inGameGUI.gameObject.SetActive(false);
+
         gameState = GameState.Game_Start;
         StartCoroutine(StateMachine());
     }
@@ -47,7 +58,8 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
-            yield return StartCoroutine(gameState.ToString());
+            runningState = StartCoroutine(gameState.ToString());
+            yield return runningState;
             yield return null;
         }
     }
@@ -95,31 +107,53 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         gameState = GameState.Game_Play;
+
+        // Spawn Impulse
+        flowControl.SpawnImpulse();
+        flowControl.RunImpulses();
+
         yield break;
     }
 
     protected virtual IEnumerator Game_Play()
     {
-        // Spawn Impulse
-        flowControl.SpawnImpulse();
-        flowControl.RunImpulses();
+        inGameGUI.gameObject.SetActive(true);
 
-        while (true)
+        while (gameState == GameState.Game_Play)
         {
             yield return null;
 
             if (WinConditionMet)
             {
                 gameState = GameState.Game_Win;
+                inGameGUI.OnPauseGame -= PauseGame;
+                inGameGUI.gameObject.SetActive(false);
                 yield break;
             }
 
             if (FailConditionMet)
             {
                 gameState = GameState.Game_Fail;
+                inGameGUI.OnPauseGame -= PauseGame;
+                inGameGUI.gameObject.SetActive(false);
                 yield break;
             }
         }
+    }
+
+    protected virtual IEnumerator Game_Pause()
+    {
+        gameTimescale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        inGameGUI.OnResumeGame += ResumeGame;
+
+        while(gameState == GameState.Game_Pause)
+        {
+            yield return null;
+        }
+
+        inGameGUI.OnResumeGame -= ResumeGame;
     }
 
     protected virtual IEnumerator Game_Win()
@@ -270,6 +304,23 @@ public class GameController : MonoBehaviour
             {
                 yield return new WaitForSeconds(delay);
             }
+        }
+    }
+
+    protected virtual void PauseGame()
+    {
+        if (gameState == GameState.Game_Play)
+        {
+            gameState = GameState.Game_Pause;
+        }
+    }
+
+    protected virtual void ResumeGame()
+    {
+        if(gameState == GameState.Game_Pause)
+        {
+            gameState = GameState.Game_Play;
+            Time.timeScale = gameTimescale;
         }
     }
 }

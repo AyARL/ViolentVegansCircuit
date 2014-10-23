@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
 
-public class LevelCompletedGUI : MonoBehaviour
+public class LevelCompletedGUI : MenuBase
 {
     [SerializeField]
     private GameObject starContainer = null;

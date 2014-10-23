@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using System.Linq;
 
-public class MainMenuGUI : MonoBehaviour
+
+public class MainMenuGUI : MenuBase
 {
     public UnityAction OnContinueAvailable { get; set; }
 
@@ -13,6 +14,8 @@ public class MainMenuGUI : MonoBehaviour
 
     [SerializeField]
     private GameObject rewardsScreen = null;
+
+
 
     private void Start()
     {
@@ -29,6 +32,7 @@ public class MainMenuGUI : MonoBehaviour
             LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.FirstGameLevel);
         }
     }
+
 
     public void ContinueGame()
     {

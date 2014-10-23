@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
-public class InGameGUI : MonoBehaviour
+public class InGameGUI : MenuBase
 {
     [SerializeField]
     private GameObject pauseScreen = null;
@@ -9,15 +10,29 @@ public class InGameGUI : MonoBehaviour
     [SerializeField]
     private GameObject confirmScreen = null;
 
+    public UnityAction OnPauseGame { get; set; }
+    public UnityAction OnResumeGame { get; set; }
+
     public void Pause()
     {
-        Time.timeScale = 0;
         pauseScreen.SetActive(true);
+        if (OnPauseGame != null)
+        {
+            OnPauseGame();
+        }
+    }
+
+    public void Resume()
+    {
+        pauseScreen.SetActive(false);
+        if(OnResumeGame != null)
+        {
+            OnResumeGame();
+        }
     }
 
     public void Restart()
     {
-        Time.timeScale = 0;
         confirmScreen.SetActive(true);
         ConfirmationMenuGUI menu = confirmScreen.GetComponent<ConfirmationMenuGUI>();
         if(menu != null)
@@ -29,7 +44,6 @@ public class InGameGUI : MonoBehaviour
 
     private void QuitToMenu()
     {
-        Time.timeScale = 0;
         confirmScreen.SetActive(true);
         ConfirmationMenuGUI menu = confirmScreen.GetComponent<ConfirmationMenuGUI>();
         if (menu != null)

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class RewardsScreenGUI : MonoBehaviour
+public class RewardsScreenGUI : MenuBase
 {
     [SerializeField]
     private GameObject backButton = null;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class StarEventReceiver : MonoBehaviour
+public class StarEventReceiver : MenuBase
 {
     [SerializeField]
     private ParticleSystem particleEffect;
