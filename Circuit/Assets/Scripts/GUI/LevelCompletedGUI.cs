@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
+using Circuit;
 
 public class LevelCompletedGUI : MenuBase
 {
@@ -24,7 +25,9 @@ public class LevelCompletedGUI : MenuBase
 
     CompletedLevelStatus status = null;
 
-    int awardedStars = 0;
+    private int awardedStars = 0;
+
+    private int starAudioID;
 
     // Use this for initialization
     void Start()
@@ -72,6 +75,12 @@ public class LevelCompletedGUI : MenuBase
             StarAnimations[i].gameObject.SetActive(true);
             StarAnimations[i].Play();
             yield return new WaitForSeconds(interval);
+
+            if(starAudioID > 0)
+            {
+                CAudioControl.StopSound(starAudioID);
+            }
+            starAudioID = CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_STAR_FALL, false, true, false, 1f);
         }
     }
 
@@ -79,16 +88,22 @@ public class LevelCompletedGUI : MenuBase
     // Button functions
     public void ReplayLevel()
     {
+        CAudioControl.StopSound(starAudioID);
+        CAudioControl.ClearContainers();
         LoadingManager.LoadLevel(status.LevelIndex);
     }
 
     public void NextLevel()
     {
+        CAudioControl.StopSound(starAudioID);
+        CAudioControl.ClearContainers();
         LoadingManager.LoadLevel(status.LevelIndex + 1);
     }
 
     public void MainMenu()
     {
+        CAudioControl.StopSound(starAudioID);
+        CAudioControl.ClearContainers();
         LoadingManager.LoadLevel(LoadingManager.LevelLoadingSettings.MainMenuIndex);
     }
 

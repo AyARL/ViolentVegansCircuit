@@ -173,14 +173,20 @@ public class TutorialGameController : GameController
         CAudioControl.StopSound(m_iMusicID);
         m_iMusicID = 0;
 
-        CAudioControl.ClearContainers();
-
         Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
+        if (endLevelSoundID <= 0)
+        {
+            endLevelSoundID = CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_LEVEL_COMPLETED, false, true, false, 1f);
+        }
+
         yield return StartCoroutine(PlayEffects(winEffect, 0.1f));
+
+        CAudioControl.StopSound(endLevelSoundID);
+        CAudioControl.ClearContainers();
 
         SetLevelStatus(true);
 
@@ -199,14 +205,17 @@ public class TutorialGameController : GameController
         CAudioControl.StopSound(m_iMusicID);
         m_iMusicID = 0;
 
-        CAudioControl.ClearContainers();
-
         Handheld.Vibrate();
 
         flowControl.OnImpulseRemoved -= ImpulseLost;
         flowControl.OnEndPointActivated -= EndPointActivated;
 
         yield return StartCoroutine(PlayEffects(failEffect, 0f));
+
+        if (endLevelSoundID <= 0)
+        {
+            endLevelSoundID = CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_GAMEOVER, false, true, false, 1f);
+        }
 
         var tileOrderIndices = Enumerable.Range(0, circuitBoard.Tiles.Count).ToList();
         Utility.Shuffle(tileOrderIndices);
@@ -219,6 +228,9 @@ public class TutorialGameController : GameController
             circuitBoard.Tiles[i].GetComponentInChildren<Animator>().SetTrigger("FallOut");
             yield return new WaitForSeconds(0.05f);
         }
+
+        CAudioControl.StopSound(endLevelSoundID);
+        CAudioControl.ClearContainers();
 
         SetLevelStatus(false);
 
