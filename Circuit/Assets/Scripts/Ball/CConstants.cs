@@ -30,6 +30,12 @@ namespace Circuit
         public const string TAG_AUDIO = "Audio";
     }
 
+    public class CNames
+    {
+        // List of commonly used names.
+        public const string NAME_TILE_OBSTACLE = "CircuitTile_Obstacle";
+    }
+
     public class CErrorStrings
     {
         // Declare error messages.
@@ -54,6 +60,10 @@ namespace Circuit
 
         // Animator parameters
         public const string ANIMATOR_PARAMETER_BALL_STATE = "iState";
+
+        // Obstacle animation triggers.
+        public const string ANIMATOR_TRIGGER_FAN_BROKEN = "Broken";
+        public const string ANIMATOR_TRIGGER_FAN_DEAD = "Dead";
     }
 
     public class CAudio
