@@ -153,7 +153,7 @@ public class CObstacle : MonoBehaviour {
             }
 
             // Play collision sound
-            CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.8f );
+            CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 1.5f );
 
             // Damage the obstacle.
             ApplyDamage();
