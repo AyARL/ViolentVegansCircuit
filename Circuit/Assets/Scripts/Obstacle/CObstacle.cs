@@ -42,6 +42,14 @@ public class CObstacle : MonoBehaviour {
         }
 
         m_psParticleSystems = m_goEffect.GetComponentsInChildren< ParticleSystem >();
+
+        // Stop all the particles from playing.
+        foreach ( ParticleSystem psParticle in m_psParticleSystems )
+        {
+            //psParticle.transform.localPosition = Vector3.zero;
+            //psParticle.transform.localRotation = Quaternion.identity;
+            psParticle.Stop();
+        }
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////
@@ -137,6 +145,7 @@ public class CObstacle : MonoBehaviour {
 
             // Throw some particles around.
             m_goEffect.transform.position = cCollision.contacts[ 0 ].point;
+            m_goEffect.transform.LookAt( cCollision.transform.position );
             foreach ( ParticleSystem psParticle in m_psParticleSystems )
             {
                 psParticle.Play();
@@ -144,7 +153,7 @@ public class CObstacle : MonoBehaviour {
             }
 
             // Play collision sound
-            CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.5f );
+            CAudioControl.CreateAndPlayAudio( CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.8f );
 
             // Damage the obstacle.
             ApplyDamage();
@@ -181,7 +190,7 @@ public class CObstacle : MonoBehaviour {
         if ( iRandomVariable == 0 )
         {
             // Take down half of the obstacle's health.
-            m_fHealth -= ( m_fHealth / 2 ) - 1;
+            m_fHealth -= ( m_fHealth / 2 ) + 1;
         }
         else if ( iRandomVariable == 1 )
         {

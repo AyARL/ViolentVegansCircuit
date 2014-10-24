@@ -18,6 +18,8 @@ namespace Circuit
         public const float DEFAULT_SPEED = 50.0f;
         public const float MAX_ROTATION_ANGLE = 15.0f;
         public const float DEFAULT_HIGH_VELOCITY = 5.0f;
+
+        public const float CAMERA_EFFECT_INTENSITY = 3.0f;
     }
 
     public class CTags

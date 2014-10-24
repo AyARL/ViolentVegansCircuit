@@ -31,11 +31,6 @@ public class CBall : MonoBehaviour
     private int m_iAudioID = 0;
     public int AudioID { get { return m_iAudioID; } private set { m_iAudioID = value; } }
 
-    // Indicates if we're holding a charge.
-    [SerializeField]
-    private bool m_bHoldsCharge = false;
-    public bool HoldsCharge { get { return m_bHoldsCharge; } private set { m_bHoldsCharge = value; } }
-
     private bool m_bCanMove = true;
     public bool MovementStatus { get { return m_bCanMove; } private set { m_bCanMove = value; } }
 
@@ -151,17 +146,6 @@ public class CBall : MonoBehaviour
                 Debug.LogError(string.Format("{0} {1} " + CErrorStrings.ERROR_AUDIO_FILES_NOT_LOADED, strFunctionName, typeof(CAudioControl)));
                 return;
             }
-        }
-
-        if (cCollision.collider.tag == CTags.TAG_TILE)
-        {
-            // Get a handle on the tileflow component.
-            //CircuitTileFlow cTileFlow = cCollision.gameObject.GetComponent< CircuitTileFlow >();
-
-            //if ( true == cTileFlow.BallAttached )
-            //{
-            //    m_bHoldsCharge = true;
-            //}
         }
     }
 
@@ -397,5 +381,15 @@ public class CBall : MonoBehaviour
                 Debug.Log(string.Format("{0} {1} " + CErrorStrings.ERROR_UNHANDLED_DEVICE, strFunctionName, SystemInfo.deviceType));
                 break;
         }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               ResetAcceleration
+    /////////////////////////////////////////////////////////////////////////////
+    public void ResetAcceleration()
+    {
+        // As the function name suggests, calling this function will reset the initial
+        //  position of the accelerometer.
+        m_v3InitialAccelerometerPosition = Input.acceleration;
     }
 }

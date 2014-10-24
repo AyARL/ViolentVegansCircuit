@@ -66,7 +66,9 @@ public class CCameraControl : MonoBehaviour {
             case EEffectType.EFFECT_SHAKE_CAMERA:
 
                 // Create a target vector for the MoveObject coroutine.
-                Vector3 v3TargetVec = new Vector3( Random.Range( this.transform.position.x - 1, this.transform.position.x + 1 ), Random.Range( this.transform.position.y - 1, this.transform.position.y + 1 ), Random.Range( this.transform.position.z - 1, this.transform.position.z + 1 ) );
+                Vector3 v3TargetVec = new Vector3( Random.Range( this.transform.position.x - CConstants.CAMERA_EFFECT_INTENSITY, this.transform.position.x + CConstants.CAMERA_EFFECT_INTENSITY ),
+                                                   Random.Range( this.transform.position.y - CConstants.CAMERA_EFFECT_INTENSITY, this.transform.position.y + CConstants.CAMERA_EFFECT_INTENSITY ), 
+                                                   Random.Range( this.transform.position.z - CConstants.CAMERA_EFFECT_INTENSITY, this.transform.position.z + CConstants.CAMERA_EFFECT_INTENSITY ) );
 
                 // Tilt the camera slightly towards the target Vector.
                 yield return StartCoroutine( MoveObject( this.transform, v3TargetVec, 0.1f ) );
