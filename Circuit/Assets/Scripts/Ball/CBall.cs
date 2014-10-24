@@ -71,7 +71,7 @@ public class CBall : MonoBehaviour
         Screen.orientation = ScreenOrientation.LandscapeLeft;
 
         // Get initial accelorometer values when the user first launches the game.
-        m_v3InitialAccelerometerPosition = Input.acceleration;
+        m_v3InitialAccelerometerPosition = Vector3.zero;
 
         // Spawn and initialise the shadow
         if(shadowPrefab != null)
@@ -357,7 +357,7 @@ public class CBall : MonoBehaviour
                         {
                             case TouchPhase.Began:
 
-                                // User is currently touching the screen, stop the ball.
+                                // User is currently touching the screen, stop the ball
                                 m_bCanMove = false;
 
                                 break;
