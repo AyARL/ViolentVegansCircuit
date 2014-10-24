@@ -5,8 +5,8 @@ using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public abstract class MenuBase : MonoBehaviour {
-
+public abstract class MenuBase : MonoBehaviour
+{
     private int buttonSoundId;
 
     protected GameObject[] buttonsInScene;
@@ -36,7 +36,7 @@ public abstract class MenuBase : MonoBehaviour {
             buttonsInScene = GameObject.FindGameObjectsWithTag("Button");
         }
 
-        foreach(Button button in buttonsInScene.Select(b => b.GetComponent<Button>()))
+        foreach (Button button in buttonsInScene.Select(b => b.GetComponent<Button>()))
         {
             button.interactable = false;
         }
@@ -54,6 +54,5 @@ public abstract class MenuBase : MonoBehaviour {
             button.interactable = true;
         }
     }
-
 
 }
