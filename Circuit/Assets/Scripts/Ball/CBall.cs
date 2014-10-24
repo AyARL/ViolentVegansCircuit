@@ -34,8 +34,10 @@ public class CBall : MonoBehaviour
     private bool m_bCanMove = true;
     public bool MovementStatus { get { return m_bCanMove; } private set { m_bCanMove = value; } }
 
-    public EMovementType m_eMovementType;
-    public EBallState m_eCurrentState;
+    private EMovementType m_eMovementType;
+
+    private EBallState m_eCurrentState;
+    public EBallState BallState { get { return m_eCurrentState; } private set { m_eCurrentState = value; } }
 
     private float m_fSpeed = CConstants.DEFAULT_SPEED;
 
@@ -101,11 +103,33 @@ public class CBall : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////////
     void OnCollisionStay(Collision cCollision)
     {
+        // Error Handling
+        string strFunctionName = "CBall::OnCollisionStay()";
         // Check if the detected collision is a tile.
         if (cCollision.gameObject.tag == CTags.TAG_TILE)
         {
             // Send a message to the tile containing the vector3 position.
             cCollision.gameObject.SendMessageUpwards("OnReceiveMessage", transform.position, SendMessageOptions.DontRequireReceiver);
+
+            // Get a handle on the CircuitTile component.
+            CircuitTileFlow cTile = cCollision.gameObject.GetComponentInParent< CircuitTileFlow >();
+            if ( null == cTile )
+            {
+                Debug.LogError( string.Format( "{0} {1} " + CErrorStrings.ERROR_MISSING_COMPONENT, strFunctionName, typeof( CircuitTileFlow ).ToString() ) );
+                return;
+            }
+
+            // Check if we're attached.
+            if ( true == cTile.BallAttached )
+            {
+                // Set the ball's status to happy.
+                SetBallState( EBallState.STATE_HAPPY );
+            }
+            else
+            {
+                // Set the ball to normal.
+                SetBallState( EBallState.STATE_NORMAL );
+            }
         }
     }
 
@@ -301,8 +325,7 @@ public class CBall : MonoBehaviour
                 // Run the dizzy animation.
                 if (transform.rigidbody.velocity.x > CConstants.DEFAULT_HIGH_VELOCITY || transform.rigidbody.velocity.z > CConstants.DEFAULT_HIGH_VELOCITY)
                 {
-
-                    m_eCurrentState = EBallState.STATE_DIZZY;
+                    SetBallState( EBallState.STATE_DIZZY );
                 }
 
                 break;
@@ -391,5 +414,15 @@ public class CBall : MonoBehaviour
         // As the function name suggests, calling this function will reset the initial
         //  position of the accelerometer.
         m_v3InitialAccelerometerPosition = Input.acceleration;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               SetBallState
+    /////////////////////////////////////////////////////////////////////////////
+    public void SetBallState( EBallState eState )
+    {
+        // Change state only if current state isn't the UNHAPPY state.
+        if ( m_eCurrentState != EBallState.STATE_UNHAPPY )
+            m_eCurrentState = eState;
     }
 }

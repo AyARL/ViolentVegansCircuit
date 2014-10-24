@@ -104,7 +104,7 @@ public class CBallFace : MonoBehaviour {
         }
 
         // Retrieve the current state parameter value
-        CBall.EBallState eBallState = cBallComponent.m_eCurrentState;
+        CBall.EBallState eBallState = cBallComponent.BallState;
 
         // Set the transition
         if ( eBallState != m_eCurrentFaceState )
@@ -113,12 +113,12 @@ public class CBallFace : MonoBehaviour {
             m_eCurrentFaceState = eBallState;
         }
 
-        // Check if the animation has finished playing and switch to idle if it has.
-        if ( eBallState != CBall.EBallState.STATE_NORMAL )
+        // Check if the dizzy animation has finished playing and switch to idle if it has.
+        if ( eBallState == CBall.EBallState.STATE_DIZZY )
         {
             if ( m_anAnimator.GetCurrentAnimatorStateInfo(0).length < m_anAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime )
             {
-                cBallComponent.m_eCurrentState = CBall.EBallState.STATE_NORMAL;
+                cBallComponent.SetBallState( CBall.EBallState.STATE_NORMAL );
                 m_anAnimator.SetInteger( CAnimatorConstants.ANIMATOR_PARAMETER_BALL_STATE, ( int )CBall.EBallState.STATE_NORMAL );
             }
         }

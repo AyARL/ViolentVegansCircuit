@@ -246,6 +246,16 @@ public class GameController : MonoBehaviour
         {
             if (numberOfInactiveEndPoints == endPointsTotal)
             {
+                CBall ball = Player.GetComponent< CBall >();
+                if ( null == ball )
+                {
+                    Debug.LogError( string.Format( "{0}: {1}", CErrorStrings.ERROR_MISSING_COMPONENT, typeof( CBall ).ToString() ) );
+                }
+                else
+                {
+                    ball.SetBallState( CBall.EBallState.STATE_UNHAPPY );
+                }
+
                 FailConditionMet = true;
             }
             else

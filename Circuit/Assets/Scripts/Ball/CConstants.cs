@@ -36,6 +36,9 @@ namespace Circuit
     {
         // List of commonly used names.
         public const string NAME_TILE_OBSTACLE = "CircuitTile_Obstacle";
+        public const string NAME_TILE_CONNECTOR_IN = "CircuitTile_InConnector";
+        public const string NAME_TILE_CONNECTOR_OUT = "CircuitTile_OutConnector";
+        public const string NAME_GAME_CONTROLLER = "GameControl";
     }
 
     public class CErrorStrings
