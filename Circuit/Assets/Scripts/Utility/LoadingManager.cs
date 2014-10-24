@@ -31,7 +31,14 @@ public class LoadingManager : MonoBehaviour
     public static void LoadLevel(int index)
     {
         levelToLoad = index;
-        Application.LoadLevel(levelLoadingSettings.LoadingScreenIndex);
+        if (Application.HasProLicense())
+        {
+            Application.LoadLevelAsync(levelLoadingSettings.LoadingScreenIndex);
+        }
+        else
+        {
+            Application.LoadLevel(levelLoadingSettings.LoadingScreenIndex);
+        }
     }
 
     private IEnumerator OnLevelWasLoaded(int level)
