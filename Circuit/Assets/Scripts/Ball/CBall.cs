@@ -162,7 +162,7 @@ public class CBall : MonoBehaviour
             // Play the wall hit sound.
             if (true == m_cAudioController.AudioFilesLoaded)
             {
-                CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 0.8f);
+                CAudioControl.CreateAndPlayAudio(CAudio.AUDIO_EFFECT_BALL_WALLHIT, false, true, false, 1.5f);
             }
             else
             {
