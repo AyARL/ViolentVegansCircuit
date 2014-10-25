@@ -23,7 +23,9 @@ public class TutorialInstructionQueue : ScriptableObject
 
             instructions = instructions.Except(stateInstructions).ToList();
 
-            // Why can't I do that
+            /* Why can't I do that - the answer to that question is: Where uses deferred execution. 
+            Therefore it only gets the results while iterating, but the source is being modified here, so it fails.
+            Casting the result to list or array first would work */
             //foreach (TutorialInstruction i in stateInstructions)
             //{
             //    instructions.Remove(i);
