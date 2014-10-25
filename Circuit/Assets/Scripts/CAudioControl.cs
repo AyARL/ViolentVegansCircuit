@@ -17,6 +17,8 @@ public class CAudioControl : MonoBehaviour {
 
     private static Dictionary< string, List< AudioClip > > m_dAudioClipContainer = new Dictionary< string, List< AudioClip > >();
 
+    private static Dictionary< int, float > m_dVolumeContainer = new Dictionary< int, float >();
+
     private List< string > m_liValidExtensions = new List< string > 
     { 
         CAudio.FILE_TYPE_MP3,
@@ -37,6 +39,8 @@ public class CAudioControl : MonoBehaviour {
         CAudio.AUDIO_EFFECT_LEVEL_COMPLETED,
         CAudio.AUDIO_EFFECT_STAR_FALL
     };
+
+    private static bool m_bMainMenuMode = false;
 
     private bool m_bAudioFilesLoaded = false;
     public bool AudioFilesLoaded { get { return m_bAudioFilesLoaded; } private set { m_bAudioFilesLoaded = value; }  }
@@ -362,5 +366,165 @@ public class CAudioControl : MonoBehaviour {
     public static void ClearContainers()
     {
         m_liActiveAudioObjects.Clear();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               SetVolume
+    /////////////////////////////////////////////////////////////////////////////
+    public static void SetVolume( int iAudioID, float fVol )
+    {
+        // The below GameObject will contain the Audio Object.
+        GameObject goAudioObject = null;
+
+        // Loop through all active audio objects and retrieve the object that
+        //  matches the provided id.
+        foreach ( GameObject goAudio in m_liActiveAudioObjects )
+        {
+            if ( goAudio == null )
+            {
+                m_liActiveAudioObjects.Remove( goAudio );
+                return;
+            }
+
+            // Attempt to retrieve the audio clip object.
+            CAudioClip aClip = goAudio.GetComponent< CAudioClip >();
+            if ( aClip == null )
+                return;
+
+            if ( aClip.ClipId == iAudioID )
+            {
+                // We found a match.
+                goAudioObject = goAudio;
+            }
+        }
+
+        // Check if we managed to find the gameobject.
+        if ( goAudioObject == null )
+            return;
+
+        // Retrieve the audio source component.
+        AudioSource asAudio = goAudioObject.GetComponent< AudioSource >();
+        if ( null == asAudio )
+            return;
+
+        // Set the new volume
+        asAudio.volume = fVol;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               SetVolume
+    /////////////////////////////////////////////////////////////////////////////
+    public static void SetVolume( string strAudio, float fVol )
+    {
+        // The below GameObject will contain the Audio Object.
+        GameObject goAudioObject = null;
+
+        // Loop through all active audio objects and retrieve the object that
+        //  matches the provided id.
+        foreach ( GameObject goAudio in m_liActiveAudioObjects )
+        {
+            if ( goAudio == null )
+            {
+                m_liActiveAudioObjects.Remove( goAudio );
+                return;
+            }
+
+            // Check if we find a match.
+            if ( goAudio.name == strAudio )
+            {
+                goAudioObject = goAudio;
+            }
+        }
+
+        // Check if we managed to find the gameobject.
+        if ( goAudioObject == null )
+            return;
+
+        // Retrieve the audio source component.
+        AudioSource asAudio = goAudioObject.GetComponent< AudioSource >();
+        if ( null == asAudio )
+            return;
+
+        // Set the new volume
+        asAudio.volume = fVol;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// Function:               ToggleMainMenuMode
+    /////////////////////////////////////////////////////////////////////////////
+    public static void ToggleMainMenuMode()
+    {
+        // Toggle the main menu mode flag.
+        m_bMainMenuMode = !m_bMainMenuMode;
+
+        // Application expects us to be in main menu mode, we need to lower the volume.
+        //  and store the initial volume in a dictionary.
+        if ( true == m_bMainMenuMode )
+        {
+            foreach ( GameObject goAudio in m_liActiveAudioObjects )
+            {
+                if ( goAudio == null )
+                {
+                    m_liActiveAudioObjects.Remove( goAudio );
+                    return;
+                }
+
+                // Get handle on audio clip component.
+                CAudioClip aClip = goAudio.GetComponent< CAudioClip >();
+                if ( null == aClip )
+                    return;
+
+                // Get the clip ID;
+                int iAudioID = aClip.ClipId;
+
+                // Get handle on audio source.
+                AudioSource asAudio = goAudio.GetComponent< AudioSource >();
+                if ( null == asAudio )
+                    return;
+
+                // Keep track of the initial volume.
+                m_dVolumeContainer.Add( iAudioID, asAudio.volume );
+
+                // Lower volume.
+                asAudio.volume = 0.01f;
+            }
+        }
+        else
+        {
+            // Return normal volume to all sounds.
+            foreach ( GameObject goAudio in m_liActiveAudioObjects )
+            {
+                if ( goAudio == null )
+                {
+                    m_liActiveAudioObjects.Remove( goAudio );
+                    return;
+                }
+
+                // Get handle on audio clip component.
+                CAudioClip aClip = goAudio.GetComponent< CAudioClip >();
+                if ( null == aClip )
+                    return;
+
+                float fVolume = 0;
+
+                // Check if the volume container contains the clip key.
+                if ( null != aClip && true == m_dVolumeContainer.ContainsKey( aClip.ClipId ) )
+                {
+                    // Get the initial volume for this audio object.
+                    fVolume = m_dVolumeContainer[ aClip.ClipId ];
+                }
+
+                // Get handle on audio source.
+                AudioSource asAudio = goAudio.GetComponent< AudioSource >();
+                if ( null == asAudio )
+                    return;
+
+                // Turn volume back up.
+                asAudio.volume = fVolume;
+            }
+
+            // Clear out the volume container
+            m_dVolumeContainer.Clear();
+        }
     }
 }

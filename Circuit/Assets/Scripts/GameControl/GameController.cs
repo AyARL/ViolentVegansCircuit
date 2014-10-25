@@ -146,6 +146,8 @@ public class GameController : MonoBehaviour
     {
         gameTimescale = Time.timeScale;
         Time.timeScale = 0f;
+        
+        CAudioControl.ToggleMainMenuMode();
 
         inGameGUI.OnResumeGame += ResumeGame;
 
@@ -345,6 +347,8 @@ public class GameController : MonoBehaviour
         {
             gameState = GameState.Game_Play;
             Time.timeScale = gameTimescale;
+            
+            CAudioControl.ToggleMainMenuMode();
         }
     }
 }
