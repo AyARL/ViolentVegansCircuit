@@ -19,13 +19,17 @@ public class TutorialInstructionQueue : ScriptableObject
     {
         if (instructions.Count > 0)
         {
-            var insts = instructions.Where(i => i.TriggerState == state);
-            //foreach (TutorialInstruction i in insts)
+            var stateInstructions = instructions.Where(i => i.TriggerState == state);
+
+            instructions = instructions.Except(stateInstructions).ToList();
+
+            // Why can't I do that
+            //foreach (TutorialInstruction i in stateInstructions)
             //{
             //    instructions.Remove(i);
             //}
 
-            return insts;
+            return stateInstructions;
         }
         else
         {

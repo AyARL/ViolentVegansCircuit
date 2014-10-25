@@ -37,7 +37,11 @@ public class InGameGUI : MenuBase
         ConfirmationMenuGUI menu = confirmScreen.GetComponent<ConfirmationMenuGUI>();
         if(menu != null)
         {
-            menu.Initialise("Do you want to Restart current level?", RestartLevel, Pause);
+            menu.Initialise("Do you want to Restart current level?", RestartLevel, Resume);
+            if (OnPauseGame != null)
+            {
+                OnPauseGame();
+            }
         }
         pauseScreen.SetActive(false);
     }

@@ -13,7 +13,6 @@ public class ConfirmationMenuGUI : MenuBase
 
     public void Initialise(string message, UnityAction confirmation, UnityAction back)
     {
-        Time.timeScale = 0f;
         titleMessage.text = message;
         confirmAction = confirmation;
         backAction = back;
